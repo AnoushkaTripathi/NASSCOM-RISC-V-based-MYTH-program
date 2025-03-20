@@ -19,10 +19,10 @@ Welcome to this hands-on journey into digital logic design! We're diving into TL
 |     |                                          | [Sequential Logic](https://example.com/day3-part4) |
 |     |                                          | [Pipelined Logic](https://example.com/day3-part5) |
 |     |                                          | [State](https://example.com/day3-part6) |
-| 4   | [Coding a RISC-V CPU subset](https://example.com/day4)  | [Introduction to RISC-V](https://example.com/day4-part1)      |
-|     |                                          | [Designing a Simple CPU Subset](https://example.com/day4-part2) |
-|     |                                          | [Verilog Implementation](https://example.com/day4-part3)      |
+| 4   | [Coding a RISC-V CPU subset](https://example.com/day4)  | [To be updated soon](https://example.com/day4-part1)      |
+|     |                                          | [To be updated soon](https://example.com/day4-part2) |
+|     |                                          | [To be updated soon](https://example.com/day4-part3)      |
 | 5   | [Pipelining and completing your CPU](https://example.com/day5)  | [Understanding CPU Pipelining](https://example.com/day5-part1) |
-|     |                                          | [Implementing Pipelines](https://example.com/day5-part2)      |
-|     |                                          | [Finalizing CPU Design](https://example.com/day5-part3)       |
+|     |                                          | [To be updated soon](https://example.com/day5-part2)      |
+|     |                                          | [To be updated soon](https://example.com/day5-part3)       |
 
