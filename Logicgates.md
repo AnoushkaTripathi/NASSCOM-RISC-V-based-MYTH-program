@@ -20,5 +20,13 @@ Inputs: A, B, Cin (carry-in)
 
 Outputs: S (sum), Cout (carry-out)
 ![image](https://github.com/user-attachments/assets/e9e4b6a4-2215-41da-9295-cddc36df31da)
+![image](https://github.com/user-attachments/assets/ebfbee27-6328-45d7-a812-4633c05d55be)
 
+### ⏳ Sequential Logic
+
+Unlike combinational logic, sequential circuits rely on clocks. This introduces state and allows data to flow through time.
+
+Registers store values on clock edges
+
+Flip-flops remember single bits
 ![image](https://github.com/user-attachments/assets/8555eb5c-1343-452d-b4ee-093040893933)
