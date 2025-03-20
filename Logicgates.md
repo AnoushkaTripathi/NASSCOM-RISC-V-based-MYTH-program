@@ -27,8 +27,9 @@ Outputs: S (sum), Cout (carry-out)
 Unlike combinational logic, sequential circuits rely on clocks. This introduces state and allows data to flow through time.
 
 Registers store values on clock edges
+![image](https://github.com/user-attachments/assets/beaad135-9637-4e22-8c87-133ed5fa214c)
 
-![Uploading image.png…]()
+
 
 ### 🛠️ Pipeline Logic
 
