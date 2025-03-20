@@ -41,3 +41,17 @@ f: Chosen input, routed to output
 - Compact syntax
 - Readable formatting
 - Efficient synthesis in hardware
+# 🚀 Makerchip IDE: TL-Verilog Integration
+Makerchip is an online IDE designed for TL-Verilog — a streamlined hardware design language. It supports coding, visualization, and debugging, all in one place.
+
+#### 🔧 Makerchip Features Overview
+✅ Code Editor: Write TL-Verilog directly in your browser.
+✅ Live Simulation: Runs your design on the cloud and generates waveforms.
+✅ Circuit Diagram Generator: Visualizes your circuit from TL-Verilog code.
+✅ Waveform Viewer: Allows you to trace signals in time.
+✅ Debugging Tools:
+
+Trace errors in the code editor
+Navigate to problematic expressions
+✅ Save & Clone Projects: Generates a shareable URL (bookmark it to save progress).
+✅ TL-Verilog Documentation: Built-in resources and examples.
