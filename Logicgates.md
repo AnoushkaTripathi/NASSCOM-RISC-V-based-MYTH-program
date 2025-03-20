@@ -28,8 +28,8 @@ Unlike combinational logic, sequential circuits rely on clocks. This introduces 
 
 Registers store values on clock edges
 
-Flip-flops remember single bits
-![image](https://github.com/user-attachments/assets/8555eb5c-1343-452d-b4ee-093040893933)
+![Uploading image.png…]()
+
 ### 🛠️ Pipeline Logic
 
 Pipeline logic distributes computation over multiple cycles, enhancing performance. Each stage processes part of the data, and outputs flow from stage to stage on clock edges.
@@ -37,6 +37,7 @@ Pipeline logic distributes computation over multiple cycles, enhancing performan
 ### 🏗️ Hierarchical Design
 
 We can build small modules (like the full adder) and reuse them as building blocks to create more complex circuits — think LEGO for hardware design!
+![image](https://github.com/user-attachments/assets/8555eb5c-1343-452d-b4ee-093040893933)
 
 ### TL-Verilog Syntax Overview
 
