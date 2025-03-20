@@ -12,7 +12,7 @@
 
 | Day | Topic                                    | Subparts                              |
 | --- | ---------------------------------------- | ------------------------------------- |
-| 3   | [Digital logic with TL-Verilog in Makerchip IDE](https://example.com/day3) | [Logic Gates](https://example.com/day3-part1)  |
+| 3   | [Digital logic with TL-Verilog in Makerchip IDE] | [Logic Gates](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Logicgates.md)  |
 |     |                                          | [Makerchip Platform](https://example.com/day3-part2)    |
 |     |                                          | [Combinational Logic](https://example.com/day3-part3) |
 |     |                                          | [Sequential Logic](https://example.com/day3-part4) |
