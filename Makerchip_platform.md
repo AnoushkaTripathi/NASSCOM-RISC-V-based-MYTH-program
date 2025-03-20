@@ -36,3 +36,8 @@ sel[1:0]: 2-bit select signal
 Output:
 
 f: Chosen input, routed to output
+#### 👉 Why Ternary Chains Work Best:
+
+- Compact syntax
+- Readable formatting
+- Efficient synthesis in hardware
