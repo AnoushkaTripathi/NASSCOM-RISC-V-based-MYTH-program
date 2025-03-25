@@ -46,12 +46,25 @@ Makerchip is an online IDE designed for TL-Verilog — a streamlined hardware de
 
 #### 🔧 Makerchip Features Overview
 ✅ Code Editor: Write TL-Verilog directly in your browser.
+
 ✅ Live Simulation: Runs your design on the cloud and generates waveforms.
-✅ Circuit Diagram Generator: Visualizes your circuit from TL-Verilog code.
+
+✅ Circuit Diagram Generator: Visualizes your circuit from TL-Verilog code
+
 ✅ Waveform Viewer: Allows you to trace signals in time.
+
 ✅ Debugging Tools:
 
 Trace errors in the code editor
 Navigate to problematic expressions
 ✅ Save & Clone Projects: Generates a shareable URL (bookmark it to save progress).
+
 ✅ TL-Verilog Documentation: Built-in resources and examples.
+![image](https://github.com/user-attachments/assets/759e7cc8-4d9b-4ac2-9e04-e51306d5938b)
+### Navigate to examples
+![image](https://github.com/user-attachments/assets/670fb0a2-f054-4f8a-942e-4d7e5a883c85)
+### After this
+![image](https://github.com/user-attachments/assets/0536dee3-7be3-47ac-bb07-17d5e8f2e11b)
+![image](https://github.com/user-attachments/assets/f66b48dd-f518-4bab-bac8-54415bb15a68)
+![image](https://github.com/user-attachments/assets/a544bbbd-4d2e-4cdf-b25a-90bc9653fa9d)
+![image](https://github.com/user-attachments/assets/872b5c9f-a581-4072-ab06-b758e902e0a4)
