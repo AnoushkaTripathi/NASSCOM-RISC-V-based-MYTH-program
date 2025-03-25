@@ -15,7 +15,7 @@ Welcome to this hands-on journey into digital logic design! We're diving into TL
 | --- | ---------------------------------------- | ------------------------------------- |
 | 3   | Digital logic with TL-Verilog in Makerchip IDE | [Logic Gates](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Logicgates.md)  |
 |     |                                          | [Makerchip Platform](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Makerchip_platform.md)    |
-|     |                                          | [Combinational Logic](https://example.com/day3-part3) |
+|     |                                          | [Combinational Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Combinational_ckts.md) |
 |     |                                          | [Sequential Logic](https://example.com/day3-part4) |
 |     |                                          | [Pipelined Logic](https://example.com/day3-part5) |
 |     |                                          | [State](https://example.com/day3-part6) |
