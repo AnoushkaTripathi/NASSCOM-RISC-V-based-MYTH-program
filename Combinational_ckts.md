@@ -7,5 +7,7 @@
 ### Solution
 ![image](https://github.com/user-attachments/assets/b3d238d9-8890-4dad-903d-352c6d43acaa)
 ##   Calculator
+![image](https://github.com/user-attachments/assets/298e8ec2-b726-4c24-b9b5-5a94b2e63ce7)
+
 ### Solution
 ![image](https://github.com/user-attachments/assets/6fd99e05-d8ac-44e9-87e0-fe7198c3cc14)
