@@ -50,7 +50,8 @@
 
    - A free-running counter starts with a value of zero.
    - Each clock cycle increments the count by 1.
-     ![image](https://github.com/user-attachments/assets/bce99958-9154-4ca7-b80e-5f29c4fa9e4d)
+     ![image](https://github.com/user-attachments/assets/87054e9d-4462-470e-9303-2094ba62bc8f)
+
 
 
 
