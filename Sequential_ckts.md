@@ -43,7 +43,7 @@
    - If reset is asserted, inject a one; otherwise, propagate the sum of the current value and the previous one.
      ![image](https://github.com/user-attachments/assets/2c060622-083b-44ef-a6fa-61090f1ccb13)
 
-   - The **>>1** and **>>2** notations are used to refer to past values for computation.
+   - The **>>1** (previous) and **>>2** (previous previous) notations are used to refer to past values for computation.
 # Labs
 11. **Exercise: Free-Running Counter:**
     ![image](https://github.com/user-attachments/assets/6d025fcd-ae17-482a-a925-73406f09e167)
