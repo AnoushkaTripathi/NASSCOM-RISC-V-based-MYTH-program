@@ -4,6 +4,13 @@
 
 
 ![image](https://github.com/user-attachments/assets/42b767e9-1c74-48ed-a57a-872861d16ed9)
+### Basic Details
+
+**Name:** Anoushka Tripathi
+
+**Email ID:** anoushka@bharatsemi.co
+
+**LinkedIN Profile:** www.linkedin.com/in/anoushkastripathi/
 
 Welcome to this hands-on journey into digital logic design! We're diving into TL-Verilog, an innovative design language pioneered by Redwood EDA. We will use the Makerchip online IDE to design, simulate, and visualize circuits. Let’s start from the basics and quickly ramp up to more advanced concepts.
 
