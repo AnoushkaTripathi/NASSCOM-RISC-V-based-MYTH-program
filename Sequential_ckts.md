@@ -33,15 +33,21 @@
    - The result of this summation is used to compute the next value in the Fibonacci series.
 
 8. **Reset in Fibonacci Circuit:**
+   ![image](https://github.com/user-attachments/assets/7d621313-7942-4815-b73d-0142c5499782)
+
    - Reset injects initial values (ones) into the circuit to start the Fibonacci sequence.
    - When reset is asserted, the circuit is initialized with the values needed for the sequence.
 
-9. **TL Verilog Representation of the Fibonacci Circuit:**
+10. **TL Verilog Representation of the Fibonacci Circuit:**
    - In TL Verilog, the circuit can be expressed using logic expressions.
    - If reset is asserted, inject a one; otherwise, propagate the sum of the current value and the previous one.
-   - The "previous" and "previous-previous" notations are used to refer to past values for computation.
+     ![image](https://github.com/user-attachments/assets/2c060622-083b-44ef-a6fa-61090f1ccb13)
 
-10. **Exercise: Free-Running Counter:**
+   - The "previous" and "previous-previous" notations are used to refer to past values for computation.
+# Labs
+11. **Exercise: Free-Running Counter:**
+    ![image](https://github.com/user-attachments/assets/6d025fcd-ae17-482a-a925-73406f09e167)
+
    - A free-running counter starts with a value of zero.
    - Each clock cycle increments the count by 1.
    - This exercise allows students to practice building a simple sequential circuit similar to the Fibonacci circuit but with incrementing values.
