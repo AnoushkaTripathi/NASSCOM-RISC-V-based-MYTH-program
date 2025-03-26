@@ -27,6 +27,8 @@
 
 7. **Fibonacci Series Circuit Example:**
    - The Fibonacci series is computed by sequentially summing two previous values.
+     ![image](https://github.com/user-attachments/assets/9030c3d2-a2d4-4ef6-844b-a37017ef0f16)
+
    - The circuit holds two values in flip-flops (e.g., 3 and 2), sums them, and propagates the sum on each clock cycle.
    - The result of this summation is used to compute the next value in the Fibonacci series.
 
