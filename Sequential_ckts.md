@@ -18,30 +18,32 @@
    - After reset, the circuit can continue its operations.
 
 5. **Sequential Circuits as State Machines:**
+   ![image](https://github.com/user-attachments/assets/e2052cd6-e69f-47ea-8686-a976286d3e9e)
+
    - Sequential circuits can be viewed as a big state machine.
    - Combinational logic propagates the input bits to output bits.
    - These output bits are then interpreted as the next state.
    - With every clock cycle, the state propagates, and the circuit performs computations based on the updated state.
 
-6. **Fibonacci Series Circuit Example:**
+7. **Fibonacci Series Circuit Example:**
    - The Fibonacci series is computed by sequentially summing two previous values.
    - The circuit holds two values in flip-flops (e.g., 3 and 2), sums them, and propagates the sum on each clock cycle.
    - The result of this summation is used to compute the next value in the Fibonacci series.
 
-7. **Reset in Fibonacci Circuit:**
+8. **Reset in Fibonacci Circuit:**
    - Reset injects initial values (ones) into the circuit to start the Fibonacci sequence.
    - When reset is asserted, the circuit is initialized with the values needed for the sequence.
 
-8. **TL Verilog Representation of the Fibonacci Circuit:**
+9. **TL Verilog Representation of the Fibonacci Circuit:**
    - In TL Verilog, the circuit can be expressed using logic expressions.
    - If reset is asserted, inject a one; otherwise, propagate the sum of the current value and the previous one.
    - The "previous" and "previous-previous" notations are used to refer to past values for computation.
 
-9. **Exercise: Free-Running Counter:**
+10. **Exercise: Free-Running Counter:**
    - A free-running counter starts with a value of zero.
    - Each clock cycle increments the count by 1.
    - This exercise allows students to practice building a simple sequential circuit similar to the Fibonacci circuit but with incrementing values.
 
-10. **Maker Chip Tool:**
+11. **Maker Chip Tool:**
    - Students can use the Maker Chip platform to simulate and test their circuits.
    - The Fibonacci circuit is provided as a reference, and students are encouraged to create their own adder circuit using the tool.
