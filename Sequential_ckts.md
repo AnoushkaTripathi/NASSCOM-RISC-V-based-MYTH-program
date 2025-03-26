@@ -50,8 +50,7 @@
 
    - A free-running counter starts with a value of zero.
    - Each clock cycle increments the count by 1.
-   - This exercise allows students to practice building a simple sequential circuit similar to the Fibonacci circuit but with incrementing values.
+     ![image](https://github.com/user-attachments/assets/bce99958-9154-4ca7-b80e-5f29c4fa9e4d)
 
-11. **Maker Chip Tool:**
-   - Students can use the Maker Chip platform to simulate and test their circuits.
-   - The Fibonacci circuit is provided as a reference, and students are encouraged to create their own adder circuit using the tool.
+
+
