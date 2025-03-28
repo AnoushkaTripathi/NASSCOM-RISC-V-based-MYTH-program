@@ -20,7 +20,7 @@ Welcome to this hands-on journey into digital logic design! We're diving into TL
 
 | Day | Topic                                    | Subparts                              |
 | --- | ---------------------------------------- | ------------------------------------- |
-| 1   | RISC-V ISA & GNU compiler toolchain | [RISC-V Basic keywords](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/riscvbasics) |
+| 1   | RISC-V ISA & GNU compiler toolchain | [RISC-V Basic keywords](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/riscvbasics.md) |
 |     |                                          | [RISC-V software toolchain](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/riscvbsoftware)      |
 |     |                                          | [Integer number representation](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/integerrepresentation.md)       |
 | 2   | ABI & Basic Verification Flow | [ABI Basics](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/ABIlab.md) |
