@@ -25,6 +25,7 @@ Welcome to this hands-on journey into digital logic design! We're diving into TL
 |     |                                          | [Combinational Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Combinational_ckts.md) |
 |     |                                          | [Sequential Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Sequential_ckts.md) |
 |     |                                          | [Pipelined Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/pipelined_logic.md) |
+|     |                                          | [Validity](https://example.com/day3-part6) |
 |     |                                          | [State](https://example.com/day3-part6) |
 | 4   | [Coding a RISC-V CPU subset](https://example.com/day4)  | [To be updated soon](https://example.com/day4-part1)      |
 |     |                                          | [To be updated soon](https://example.com/day4-part2) |
