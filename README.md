@@ -34,7 +34,7 @@ Welcome to this hands-on journey into digital logic design! We're diving into TL
 |     |                                          | [Validity](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Validity.md) |
 | 4   | Coding a RISC-V CPU subset  | [Simple RISC-V Microarchitecture](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/riscvmicro.md)      |
 |     |                                          | [Fetch & Decode](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/fetch%26decode.md) |
-|     |                                          | [RISC-V Control logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/tree/controllogic.md)      |
+|     |                                          | [RISC-V Control logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/controllogic.md)      |
 | 5   | Pipelining and completing your CPU | [Understanding CPU Pipelining](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/cpupipeline.md) |
 |     |                                          | [Solutions to Pipeline hazzards](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/hazards.md)      |
 |     |                                          | [Completing RISC-V Design](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/riscvfinal.md)       |
