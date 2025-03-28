@@ -121,7 +121,6 @@
 
 ---
 
-### ** Opening Makerchip and Using the Shell**
 
 - You open **Makerchip** and load the **starting point code** for the RISC-V CPU.
 - The initial shell contains several predefined elements, including **macros** and the **Makerchip module interface**.
@@ -214,4 +213,76 @@
 6. **Future Enhancements**: The current design is simplified, and future stages will introduce more complex features like pipelining and memory delays.
 
 ---
+
+In this section of the explanation, the instructor is guiding you through the process of visualizing the RISC-V CPU that you're developing in Makerchip as part of your lab exercises. Here’s a detailed breakdown:
+
+### **1. Lab-Specific Instantiation**
+- The provided file contains an instantiation of the **solution** for a specific lab exercise.
+- The lab number corresponds to a **slide number** from the workshop’s presentation. If this mechanism changes, you’ll be instructed to read any comments that may appear in the code.
+- The slide number ties the lab exercise to the appropriate stage of the CPU development, ensuring that you work on the correct solution for each part of the lab.
+
+### **2. CPU Visualization**
+- The **visualization** in Makerchip helps you see the internal operations of the RISC-V CPU.
+- Once the design code is substantial, the **visualization diagram** may take some time to generate. This is expected since the complexity of the design increases as you proceed through the lab exercises.
+  
+#### **A. Instruction Memory**
+- The **instruction memory** stores and displays the instructions that the CPU is executing.
+- The **disassembled form** of the instructions is shown, making it easier to understand what each instruction is doing.
+- A visual **Program Counter (PC)** is represented by an arrow, which steps through the instructions during simulation.
+
+#### **B. Program Counter and Branch Behavior**
+- The **PC** increments over each instruction during execution.
+- If the CPU encounters a **branch instruction**, the **PC** may initially continue executing the next instruction, but the pipeline will later detect that a branch was taken.
+- The CPU will **jump back** to the correct **branch target** and continue execution from the correct instruction, reflecting **branch prediction** and handling in the pipeline.
+  
+#### **C. Instruction Binary and Decode Logic**
+- Each instruction is displayed in its **binary representation**, allowing you to relate the binary values to their corresponding decoded logic.
+- You can see how the **instruction decode logic** works as the CPU processes each instruction.
+  
+#### **D. Bad Path Detection**
+- When the CPU detects that it is on a **wrong path** (due to branch misprediction or other issues), the incorrect instructions will be shown in **gray**.
+- After detecting the error, the CPU will correct itself by jumping to the correct instruction and resuming proper execution.
+
+#### **E. Register File Updates**
+- As the instructions execute, the **register file** is updated in real time.
+- For example, if an **ADD instruction** is executed, the result will be stored in a register. The visualization will show the updated values in the registers.
+- In this case, the registers that originally held the value **3** are updated to **6** after the ADD operation, and this change is reflected in the register file visualization.
+
+---
+
+### **3. Early Labs and Progressive Development**
+- In the **early stages** of the lab exercises, the visualization will not show any significant behavior because the functionality is not yet implemented.
+- As you add more logic, you’ll start seeing the **PC moving**, instructions being **decoded**, and the **register file updating** based on the instructions in the program.
+
+---
+
+### **4. Potential Issues with Visualization**
+- There might be times when the **diagram doesn’t generate** due to platform load (especially with many students working simultaneously) or technical issues with Makerchip.
+- In these cases, you can use the **waveform** to debug and track the behavior of your design.
+
+#### **A. Debugging with Waveform**
+- Even if the visual diagram times out, the **waveform** provides a detailed view of the signals used in the simulation.
+- The **CPU pipeline signals** are all represented in the waveform, allowing you to debug your design by checking these signals.
+
+#### **B. Reference Solutions**
+- If you're stuck on a specific part of the lab exercise, you can refer to the **reference solutions** for hints about the **syntax** or the design logic.
+- By comparing the **visualization** or **waveform** from the reference solution to your own design, you can pinpoint differences and understand what might be going wrong.
+
+---
+
+### **5. Protecting Code and Output**
+- The solution code is often **hidden** for certain parts of the lab exercises, especially in **protected sections** of the lab.
+- Even though you can’t see the **protected code**, you can still use the **visualization** to understand the expected behavior.
+  
+#### **A. Pipeline Signals for Debugging**
+- The **CPU visualization pipeline** in the waveform provides all the signals used in the visualization, so you can use these signals to debug your design.
+- By analyzing these signals, you can figure out how the instructions are flowing through the pipeline and identify potential errors in your implementation.
+
+---
+
+### **Summary**
+- The **visualization tool** helps you track the progress of your CPU as you develop it through the lab exercises.
+- Early on, the visualization won’t show much until you add more functionality, but as you progress, the **PC**, **instruction decode**, and **register updates** will become visible.
+- The **waveform** can be used for more detailed debugging, especially when the visual diagram fails to generate.
+- **Reference solutions** are available to guide you if you get stuck, and you can compare your design with the correct behavior using both the visualization and the waveform.
 
