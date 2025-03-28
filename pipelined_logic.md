@@ -146,3 +146,59 @@
 - **TL-Verilog** simplifies pipeline design by abstracting the timing of operations, reducing the complexity of managing flip-flops.
 - The **waveform viewer** in Makerchip helps correlate inputs and outputs at different stages of the pipeline, allowing designers to track data flow over time.
 - **Feedback loops** enable more complex sequential logic, where later-stage results are fed back into earlier stages for future computations.
+
+## Pipeline Calculator Circuit Example in TL-Verilog
+
+#### 1. **Starting Point: Calculator and Counter in Pipeline**
+   - **Objective**: Integrate the calculator circuit you previously developed into a **named pipeline** (`calc`), specifically in **stage 1** of that pipeline. Also, incorporate the **counter** you developed into the same pipeline, **stage 1**.
+   - Once both the **calculator** and **counter** are in the same pipeline stage, you can simulate the circuit to verify that both components work as expected in the context of the pipeline.
+
+#### 2. **Next Steps: High-Frequency Operation Adjustments**
+   - When dealing with a **high-frequency circuit**, you may need to break down computations over multiple clock cycles for better timing closure.
+   - **Calculator Circuit Modifications**:
+     - Split the calculator operation into **two stages**:
+       - **Stage 1**: Perform the actual **arithmetic operation** (e.g., addition, subtraction, multiplication, or division).
+       - **Stage 2**: Use a **multiplexer** to select the correct result based on the selected operation.
+   - By breaking up the logic into two stages, the circuit can handle **higher frequencies**, ensuring that the timing of each stage is met.
+
+#### 3. **Introducing Two-Cycle Latency**
+   - Since the circuit now takes **two cycles** to perform a computation, you must handle the **input-output loopback** appropriately.
+   - Modify the design so that:
+     - The **output** is **looped back** to the input with a **two-cycle latency** (rather than one cycle).
+     - This ensures that the computation’s result is available after two cycles and used as the next input, maintaining continuity in the iterative process.
+
+#### 4. **Step-by-Step Breakdown of Circuit Changes**
+   - **Step 1**: **Output Loopback**
+     - Modify the **alignment of the output** so that it loops back with a two-cycle latency.
+     - Initially, the **multiplexer** is still in the same stage as the arithmetic operations (addition, subtraction, etc.).
+     - The loopback incorporates two **staging flops**, which hold intermediate results and recirculate them back to the input after two cycles.
+
+   - **Step 2**: **Single-Bit Counter for Cycle Tracking**
+     - You need to track whether the current cycle is a **computation cycle** or a **meaningless cycle** (where no valid computation occurs).
+     - Use a **single-bit counter** to toggle between **0** and **1**:
+       - This counter alternates between 0 and 1, keeping track of **even and odd cycles**.
+       - This acts as an **oscillator** to determine which cycles should perform calculations (even cycles) and which cycles are idle (odd cycles).
+     - The output of this circuit serves as a **valid signal**, which is `1` during computation cycles and `0` during meaningless cycles.
+
+   - **Step 3**: **Valid Signal and Reset Logic**
+     - Connect the **valid signal** along with the **reset signal** to determine when to drive the output with a **zero value**:
+       - If the system is in reset or the cycle is invalid (odd cycle), the output should be driven to `0`.
+       - This ensures that during idle cycles, the circuit produces a zero output, keeping the system stable during non-computation cycles.
+
+   - **Step 4**: **Re-Timing the Multiplexer**
+     - Move the **multiplexer** logic from **stage 1** to **stage 2**, finalizing the two-stage pipeline design.
+     - By shifting the multiplexer, the selection of the arithmetic operation result happens in **stage 2**, while the actual operation occurs in **stage 1**.
+     - After making these changes, you can verify the circuit’s behavior in the simulation.
+
+#### 5. **Expected Behavior in Simulation**
+   - The resulting pipeline will now perform a **calculation every other cycle**:
+     - During **even cycles** (valid cycles), the circuit performs computations.
+     - During **odd cycles** (invalid cycles), the inputs are meaningless, and the output is driven to zero.
+   - In the **waveform viewer**, you should observe the calculator executing operations on **valid cycles** and outputting results every other cycle, with zero output during invalid cycles.
+
+#### 6. **Key Concepts Reinforced in This Example**
+   - **Pipeline Staging**: Dividing the computation into two pipeline stages allows the circuit to operate at **higher frequencies** by splitting the workload across clock cycles.
+   - **Two-Cycle Latency**: The output is looped back with a two-cycle delay, reflecting the fact that the computation now takes two cycles to complete.
+   - **Single-Bit Counter**: The use of a single-bit counter creates a simple oscillation to track which cycles are valid for computation.
+   - **Valid Signal**: The **valid signal** ensures that computations only happen on designated cycles, and the circuit outputs zero during idle cycles.
+   - **Multiplexer Re-Timing**: Moving the multiplexer to the second stage separates the operation from the selection, ensuring that timing constraints are met without overloading a single pipeline stage.
