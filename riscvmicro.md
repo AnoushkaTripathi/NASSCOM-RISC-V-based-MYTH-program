@@ -214,8 +214,6 @@
 
 ---
 
-In this section of the explanation, the instructor is guiding you through the process of visualizing the RISC-V CPU that you're developing in Makerchip as part of your lab exercises. Here’s a detailed breakdown:
-
 ### **1. Lab-Specific Instantiation**
 - The provided file contains an instantiation of the **solution** for a specific lab exercise.
 - The lab number corresponds to a **slide number** from the workshop’s presentation. If this mechanism changes, you’ll be instructed to read any comments that may appear in the code.
