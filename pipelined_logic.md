@@ -202,3 +202,14 @@
    - **Single-Bit Counter**: The use of a single-bit counter creates a simple oscillation to track which cycles are valid for computation.
    - **Valid Signal**: The **valid signal** ensures that computations only happen on designated cycles, and the circuit outputs zero during idle cycles.
    - **Multiplexer Re-Timing**: Moving the multiplexer to the second stage separates the operation from the selection, ensuring that timing constraints are met without overloading a single pipeline stage.
+# Labs
+![image](https://github.com/user-attachments/assets/9ee50ba5-da48-45a0-bb2c-eae6304d4e08)
+![image](https://github.com/user-attachments/assets/90682776-171a-4910-8794-ecb26ca01006)
+![image](https://github.com/user-attachments/assets/9ff380e3-fb31-4299-955f-4339d7023c60)
+![image](https://github.com/user-attachments/assets/de0a94aa-9026-462f-b5ee-d6b186c03938)
+![image](https://github.com/user-attachments/assets/d76909fb-3a7f-471b-8290-d85e07d4f133)
+![image](https://github.com/user-attachments/assets/7eb0357c-a8d1-4088-9b06-e12921b7687d)
+![image](https://github.com/user-attachments/assets/f7920203-dff4-45b4-9e1b-eb356442678a)
+
+
+
