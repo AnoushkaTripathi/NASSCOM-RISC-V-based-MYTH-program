@@ -20,12 +20,12 @@ Welcome to this hands-on journey into digital logic design! We're diving into TL
 
 | Day | Topic                                    | Subparts                              |
 | --- | ---------------------------------------- | ------------------------------------- |
-| 1   | RISC-V ISA & GNU compiler toolchain | [RISC-V Basic keywords](https://example.com/day5-part1) |
-|     |                                          | [RISC-V software toolchain](https://example.com/day5-part2)      |
-|     |                                          | [Integer number representation](https://example.com/day5-part3)       |
-| 2   | ABI & Basic Verification Flow | [ABI Basics](https://example.com/day5-part1) |
-|     |                                          | [ABI Labs](https://example.com/day5-part2)      |
-|     |                                          | [Basic Verification flow using iverilog](https://example.com/day5-part3)       |
+| 1   | RISC-V ISA & GNU compiler toolchain | [RISC-V Basic keywords](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/riscvbasics) |
+|     |                                          | [RISC-V software toolchain](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/riscvbsoftware)      |
+|     |                                          | [Integer number representation](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/integerrepresentation.md)       |
+| 2   | ABI & Basic Verification Flow | [ABI Basics](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/ABIlab.md) |
+|     |                                          | [ABI Labs](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/verification.md)      |
+|     |                                          | [Basic Verification flow using iverilog](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/.md)       |
 | 3   | Digital logic with TL-Verilog in Makerchip IDE | [Logic Gates](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Logicgates.md)  |
 |     |                                          | [Makerchip Platform](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Makerchip_platform.md)    |
 |     |                                          | [Combinational Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Combinational_ckts.md) |
@@ -33,9 +33,9 @@ Welcome to this hands-on journey into digital logic design! We're diving into TL
 |     |                                          | [Pipelined Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/pipelined_logic.md) |
 |     |                                          | [Validity](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Validity.md) |
 | 4   | Coding a RISC-V CPU subset  | [Simple RISC-V Microarchitecture](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/riscvmicro.md)      |
-|     |                                          | [Fetch & Decode](https://example.com/day4-part2) |
-|     |                                          | [RISC-V Control logic](https://example.com/day4-part3)      |
-| 5   | Pipelining and completing your CPU | [Understanding CPU Pipelining](https://example.com/day5-part1) |
-|     |                                          | [Solutions to Pipeline hazzards](https://example.com/day5-part2)      |
-|     |                                          | [Completing RISC-V Design](https://example.com/day5-part3)       |
+|     |                                          | [Fetch & Decode](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/fetch%26decode.md) |
+|     |                                          | [RISC-V Control logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/tree/controllogic.md)      |
+| 5   | Pipelining and completing your CPU | [Understanding CPU Pipelining](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/cpupipeline.md) |
+|     |                                          | [Solutions to Pipeline hazzards](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/hazards.md)      |
+|     |                                          | [Completing RISC-V Design](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/riscvfinal.md)       |
 
