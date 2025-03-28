@@ -97,3 +97,221 @@
 - After coding the ALU for **`addi`** and **`add`**, simulate to verify correctness.
 - The next step will involve moving to the **register file write-back** phase.
 
+## **Register File Array and Pipeline:**
+
+#### **1. Register File Array in Context:**
+- The **array** in this context refers to the register file for RISC-V, which has **32 entries**, each storing a register value.
+- **Arrays are typically provided by standard libraries** and instantiated rather than coded up manually, but understanding their internal behavior is important, especially when considering timing in pipeline design.
+
+#### **2. Internal Structure of the Array (Register File):**
+- Each entry in the array checks whether the **write index** corresponds to its own index. If it does, the entry **selects the data to write** via a multiplexer (mux).
+- **Write enable** is triggered when the write index matches the entry index, allowing the value to be written into the respective entry's flip-flops.
+- After a reset, the register file values are initialized (e.g., to **zero**).
+
+#### **3. Register File Write and Read Logic:**
+- **Write Logic:** Controls writing into the register file, ensuring that only the correct entry gets updated when a specific register is targeted.
+  - The write process involves selecting the correct data and enabling the write for the specific register.
+  
+- **Read Logic:** The **read index** determines which value is output from the register file. The logic allows for selecting the value based on the index of the read operation.
+  - In RISC-V, two registers are often read simultaneously, so this logic must handle two reads per cycle.
+  - Using **TL Verilog's 'when' expressions**, outputs are only valid when a read operation is enabled.
+
+#### **4. Timing and Pipelining Implications:**
+- In a pipeline, the instruction that writes to the register file may also be reading from it in the same cycle.
+  - If not timed correctly, this could result in the instruction **reading the value it just wrote**, which is incorrect behavior for a CPU.
+  
+- The **ideal behavior** is for the CPU to read the values written by the **previous instruction** (from the prior cycle). In a one-instruction-per-cycle pipeline, this ensures that the **updated state** is correctly read by the next instruction.
+  
+#### **5. Pipeline Staging:**
+- In a typical pipeline setup:
+  - **Stage 1** might handle the instruction that is writing to the register file.
+  - **Stage 2** then reads the register values written in Stage 1 for the subsequent instruction.
+  
+- **Ahead by one reference:** The read logic must account for the fact that the values it is reading are **one stage ahead** in the pipeline, as they were updated by the previous instruction.
+
+#### **6. Summary of the Register File Timing in the Pipeline:**
+- The values stored in the register file represent **state**.
+  - The state is updated by one instruction (in one pipeline stage) and read by the following instruction (in the next stage).
+  
+- Understanding this **write-read separation** in the pipeline helps ensure that the CPU operates correctly, with each instruction reading the correct, most recently updated values.
+
+
+## **Branch Instructions in RISC-V CPU:**
+
+#### **1. Branch vs. Jump in RISC-V:**
+- **Branch Instructions**: Conditional, meaning the branch will be taken based on a condition evaluated between two registers.
+- **Jump Instructions**: Unconditional, always taken regardless of any condition.
+
+#### **2. Branch Types in RISC-V:**
+- RISC-V offers several conditional branch instructions based on specific conditions between source registers:
+  - **Branch if Equal (BEQ)**: Branch if the two source registers are equal.
+  - **Branch if Not Equal (BNE)**: Branch if the two source registers are not equal.
+  - **Branch if Less Than (BLT)**: Branch if the first source register is less than the second.
+  - **Branch if Greater Than (BGT)**: Branch if the first source register is greater than the second.
+  - **Unsigned Comparisons**: Branch if Less Than Unsigned (BLTU) and Branch if Greater Than Unsigned (BGTU).
+
+#### **3. Conditional Branch Logic:**
+- **Condition Computation**: The condition for each branch is computed using a comparison of two source registers.
+  - For example, in BEQ, the condition checks if the values in the two registers are equal.
+  - Signed and unsigned comparisons are handled, with the signed comparisons requiring special attention to the sign bit (the upper bit of the value).
+
+## ** Completing Branch Instruction Support:**
+
+#### **1. Branch Target Calculation:**
+
+- **Branch Target PC**: 
+  - In RISC-V, the **branch target PC** is computed by adding the **current program counter (PC)** to the **immediate value** specified by the branch instruction.
+  - The branch immediate value represents the **offset** from the current PC and can be positive (forward branch) or negative (backward branch).
+  - This addition involves the **signed immediate** value but, thanks to **two's complement arithmetic**, you don't need to explicitly handle signed vs. unsigned numbers when performing this addition. It’s simply a standard arithmetic addition in hardware.
+  - The formula for the branch target address is:
+  ![image](https://github.com/user-attachments/assets/22ff3280-2e00-446e-9c5a-e1e3f953c16f)
+
+  - **Two's complement arithmetic** naturally handles both forward (positive immediate) and backward (negative immediate) jumps, as the binary representation of negative numbers in two's complement already integrates with the addition logic.
+
+#### **2. Modifying the PC Multiplexer (PC Mux):**
+
+- The **PC Mux** is responsible for selecting the address of the **next instruction** to be fetched and executed.
+  - Normally, the PC is incremented sequentially to fetch the next instruction.
+  - However, when a **branch is taken**, the **next PC** should be the **branch target PC** rather than the next sequential address.
+
+- **Adding Branch Target to PC Mux Input**:
+  - Modify the **PC Mux** to include the **branch target PC** as an input option.
+  - When a branch instruction is executed and the condition for the branch is satisfied (branch taken), the PC Mux will select the branch target PC as the next value for the PC.
+  - The PC Mux needs to have the following inputs:
+    - **Incremented PC**: This is the usual next PC value for sequential instructions.
+    - **Branch Target PC**: This is the value to select when a branch instruction is executed and the branch is taken.
+
+- **PC Mux Selection Logic**:
+  - The selection between the incremented PC and the branch target PC depends on whether the **previous instruction** was a branch and if it was **taken**.
+  - If the branch is taken, select the **branch target PC**; otherwise, select the **incremented PC** for the next instruction.
+  
+#### **3. Handling the Pipeline and Timing:**
+
+- **Pipeline Timing and Instruction Execution**:
+  - In pipelined designs, branch instructions need special attention due to the way instructions flow through the pipeline stages.
+  - The branch decision (whether to take the branch or not) is made in the **branch instruction cycle**, but the next instruction in the pipeline (at the next PC) depends on this decision.
+  - This means that the **PC update** resulting from a branch instruction will affect the next instruction in the pipeline, creating a **timing difference** known as **"ahead by one"**.
+    - For instance, the branch instruction is in **cycle 1**, but its result (whether the branch is taken) needs to affect the next instruction that is in **cycle 0**.
+  - To handle this correctly, ensure that the PC Mux is properly synchronized with this timing, so that when the branch is taken, the **next instruction fetched** will be at the branch target.
+
+#### **4. Completing the Branch Logic:**
+
+- **Conditions for Branching**:
+  - In RISC-V, branches are **conditional**. The branch will be taken based on the result of a comparison between two source registers.
+  - The conditions for branch instructions can be:
+    - **Branch Equal (BEQ)**: The branch is taken if the two source registers are equal.
+    - **Branch Not Equal (BNE)**: The branch is taken if the two source registers are not equal.
+    - **Branch Less Than (BLT)**: The branch is taken if the first source register is less than the second.
+    - **Branch Greater Than or Equal (BGE)**: The branch is taken if the first source register is greater than or equal to the second.
+    - **Unsigned Variants (BLTU, BGEU)**: These perform the same comparisons but treat the values as unsigned.
+
+- **Taken Branch Signal**:
+  - You need to compute whether a branch is **taken** or **not taken** based on the result of the condition evaluation.
+  - The **taken branch** signal can be created as a **ternary expression**, which checks whether the instruction is a branch and whether the branch condition is met.
+  - If the branch condition is satisfied, the **taken branch** signal should be asserted, instructing the PC Mux to select the branch target PC.
+  
+- **Is-Branch Type Signal**:
+  - You can use the **is_branch** signal to indicate whether the current instruction is a branch instruction. This signal is typically derived during the instruction decode phase and used to trigger the PC update logic if a branch is taken.
+
+#### **5. Final Implementation Steps:**
+
+- **Simulating the Branch Logic**:
+  - After implementing the branch target calculation and modifying the PC Mux to handle branch instructions, simulate the design to ensure that the branches behave as expected.
+  - The program should correctly iterate and branch, for example, in a loop that sums values (e.g., summing values from 1 to 9).
+  - Check that:
+    - Branches are correctly taken or not taken based on the conditions.
+    - The PC correctly updates to the branch target when a branch is taken.
+    - The program continues to execute correctly after the branch is taken.
+
+- **Debugging**:
+  - If the branch is not being taken when expected, check the condition logic (e.g., comparison between source registers).
+  - Verify that the **PC Mux** is correctly selecting between the incremented PC and the branch target PC.
+  - Ensure that the **"ahead by one"** timing is handled properly, so that the PC Mux selects the right value for the next instruction.
+
+- **Saving Work**:
+  - Once you have confirmed that the branch logic is working as expected, save your code and simulation results outside of the development environment to avoid losing any work.
+  
+#### **6. Key Takeaways:**
+
+- **Branch Target Calculation**: Add the current PC to the branch’s immediate value (signed addition).
+- **PC Mux Update**: Modify the PC Mux to select the branch target PC when a branch is taken.
+- **Pipeline Timing**: Ensure the correct timing so that the next instruction uses the updated PC when a branch is taken.
+- **Simulation**: Test the branch logic in simulation and verify that the program executes correctly.
+- **Debugging**: Ensure that the branch condition logic and PC Mux are functioning properly.
+
+These detailed steps ensure that branch instructions are correctly implemented, allowing the CPU to handle conditional branches in a pipelined architecture.
+
+#### **4. Handling Signed vs. Unsigned Comparisons:**
+- In Verilog, comparisons by default are **unsigned**. 
+  - For signed comparisons, the sign bit (the most significant bit) must be considered to ensure the correct behavior.
+
+#### **5. Step-by-Step Implementation:**
+1. **Code the Branch Conditions**: 
+   - Write expressions for the conditions (equal, not equal, less than, greater than, etc.) that determine whether the branch is taken.
+   
+2. **Combine Conditions**:
+   - The branch instruction is only taken if:
+     - The instruction is a **branch type** (use the `is_b_type` signal).
+     - The condition for the specific branch type (e.g., equal, not equal) is met.
+
+3. **Taken Branch Signal**:
+   - Create a signal `taken_branch` to indicate whether the branch should be taken.
+   - This signal should be a combination of:
+     - The branch condition.
+     - The fact that the current instruction is indeed a branch instruction (`is_b_type`).
+
+#### **6. Default Behavior for Non-Branch Instructions:**
+- For non-branch instructions, the `taken_branch` signal should default to zero to ensure no unintended branches occur.
+
+
+## Explanation of Creating a Test Bench to Verify CPU Functionality:
+
+#### **Objective**:
+- You now have a working **test program** that runs in simulation, and the goal is to verify whether the program executed correctly. To do this, we will create a **test bench** that automatically checks whether the test program has passed or failed. This test bench will monitor specific signals during the simulation.
+
+#### **Key Components**:
+
+1. **Test Bench Functionality**:
+   - A **test bench** is essentially a piece of code that verifies the behavior of the CPU by checking certain conditions during simulation.
+   - In this case, the test bench will monitor the value in **register x10**, which stores the summation result of numbers from 1 to 9.
+   
+2. **Pass/Fail Signals**:
+   - The **test bench** will use two signals:
+     - **Passed**: Indicates that the test has successfully completed, i.e., the CPU has computed the correct sum.
+     - **Failed**: Indicates that the test has not passed or something went wrong in the computation.
+   - These signals communicate with the **Makerchip platform** and allow the simulation to be controlled. If the test is successful, the simulation will stop, and a "Pass" message will be logged. If the test fails, the simulation will stop with a "Fail" message.
+
+3. **Monitoring Register x10**:
+   - The register **x10** in RISC-V holds the result of the summation (sum of numbers from 1 to 9).
+   - The test bench will constantly check the value stored in **x10** to verify whether it matches the expected result (which, for summing numbers from 1 to 9, should be **45**).
+   - The syntax `x_reg[10].value` refers to accessing the value in **register 10** (which is x10) from the register file.
+
+4. **Waiting Before Stopping Simulation**:
+   - To avoid stopping the simulation immediately after reaching the correct value, we introduce a delay using a concept called **"ahead by 5"**. This delays the test by 5 cycles, allowing more time for the waveform to be visible before halting the simulation.
+   - This is useful for debugging and analyzing the behavior of the system, as you can observe the result before the simulation ends.
+
+5. **Pass/Fail Expression**:
+   - The expression used for checking if the test passed is based on the value in **x10**. If the value matches the expected summation, the test is marked as passed.
+   - For example:
+     ```verilog
+     pass = (x_reg[10].value == 45)
+     ```
+   - If this condition is true, the simulation logs a **Pass** message and stops.
+
+#### **Steps to Implement**:
+
+1. **Create the Test Bench**:
+   - Write the logic to monitor **x10** and compare it with the expected result.
+   - Set the condition for the **Pass** signal if the summation in **x10** is correct.
+   - Set the condition for the **Fail** signal if the simulation runs too long without getting the correct result.
+
+2. **Run the Simulation**:
+   - Execute the simulation and monitor the log file to see whether the test passed or failed.
+
+3. **Verify in the Waveform**:
+   - The delay introduced by **"ahead by 5"** allows you to visually inspect the waveform for a few cycles after the correct value is reached. This can help in debugging and understanding the CPU behavior.
+
+#### **Expected Outcome**:
+- If the summation program correctly calculates the sum of numbers from 1 to 9, the value in **x10** will be **45**. The test bench will recognize this and trigger the **Pass** signal, stopping the simulation and displaying a success message in the log file.
+- If something goes wrong (e.g., an incorrect summation), the **Fail** signal will be triggered, and the simulation will stop with a failure message.
+
