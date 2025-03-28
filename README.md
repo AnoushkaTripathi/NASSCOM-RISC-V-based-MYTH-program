@@ -20,17 +20,22 @@ Welcome to this hands-on journey into digital logic design! We're diving into TL
 
 | Day | Topic                                    | Subparts                              |
 | --- | ---------------------------------------- | ------------------------------------- |
+| 1   | RISC-V ISA & GNU compiler toolchain | [Understanding CPU Pipelining](https://example.com/day5-part1) |
+|     |                                          | [To be updated soon](https://example.com/day5-part2)      |
+|     |                                          | [To be updated soon](https://example.com/day5-part3)       |
+| 2   | ABI & Basic Verification Flow | [Understanding CPU Pipelining](https://example.com/day5-part1) |
+|     |                                          | [To be updated soon](https://example.com/day5-part2)      |
+|     |                                          | [To be updated soon](https://example.com/day5-part3)       |
 | 3   | Digital logic with TL-Verilog in Makerchip IDE | [Logic Gates](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Logicgates.md)  |
 |     |                                          | [Makerchip Platform](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Makerchip_platform.md)    |
 |     |                                          | [Combinational Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Combinational_ckts.md) |
 |     |                                          | [Sequential Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Sequential_ckts.md) |
 |     |                                          | [Pipelined Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/pipelined_logic.md) |
-|     |                                          | [Validity](https://example.com/day3-part6) |
-|     |                                          | [State](https://example.com/day3-part6) |
-| 4   | [Coding a RISC-V CPU subset](https://example.com/day4)  | [To be updated soon](https://example.com/day4-part1)      |
+|     |                                          | [Validity](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Validity.md) |
+| 4   | Coding a RISC-V CPU subset  | [To be updated soon](https://example.com/day4-part1)      |
 |     |                                          | [To be updated soon](https://example.com/day4-part2) |
 |     |                                          | [To be updated soon](https://example.com/day4-part3)      |
-| 5   | [Pipelining and completing your CPU](https://example.com/day5)  | [Understanding CPU Pipelining](https://example.com/day5-part1) |
+| 5   | Pipelining and completing your CPU | [Understanding CPU Pipelining](https://example.com/day5-part1) |
 |     |                                          | [To be updated soon](https://example.com/day5-part2)      |
 |     |                                          | [To be updated soon](https://example.com/day5-part3)       |
 
