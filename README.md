@@ -32,7 +32,7 @@ Welcome to this hands-on journey into digital logic design! We're diving into TL
 |     |                                          | [Sequential Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Sequential_ckts.md) |
 |     |                                          | [Pipelined Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/pipelined_logic.md) |
 |     |                                          | [Validity](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Validity.md) |
-| 4   | Coding a RISC-V CPU subset  | [Simple RISC-V Microarchitecture](https://example.com/day4-part1)      |
+| 4   | Coding a RISC-V CPU subset  | [Simple RISC-V Microarchitecture](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/riscvmicro.md)      |
 |     |                                          | [To be updated soon](https://example.com/day4-part2) |
 |     |                                          | [To be updated soon](https://example.com/day4-part3)      |
 | 5   | Pipelining and completing your CPU | [Understanding CPU Pipelining](https://example.com/day5-part1) |
