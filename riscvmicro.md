@@ -284,3 +284,9 @@
 - The **waveform** can be used for more detailed debugging, especially when the visual diagram fails to generate.
 - **Reference solutions** are available to guide you if you get stuck, and you can compare your design with the correct behavior using both the visualization and the waveform.
 
+# Labs
+## Program Counter
+![image](https://github.com/user-attachments/assets/615c6c1d-a319-4b7c-86c2-4079c00e6cfa)
+![image](https://github.com/user-attachments/assets/dde10a03-d509-40d9-bfbe-a395870a9f27)
+![image](https://github.com/user-attachments/assets/3f2e035f-923a-4a56-85ef-bd8e76cf1b0d)
+
