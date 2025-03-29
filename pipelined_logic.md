@@ -14,6 +14,9 @@
 #### 2. **Pipeline Concept: Distributing Logic Across Clock Cycles**
    - The computation is too deep to fit in a single clock cycle, so we distribute the operations across **multiple clock cycles**.
    - Breakdown of the pipeline stages:
+     ![image](https://github.com/user-attachments/assets/258ca49c-123c-4d7b-badf-13dab0c9d31e)
+
+     
      - **Cycle 1**: Square `a` and `b` and store these intermediate results in flip-flops.
      - **Cycle 2**: Add the squared values and store the result in another set of flip-flops.
      - **Cycle 3**: Take the square root of the sum. (In reality, calculating the square root might take multiple cycles, but for simplicity, it's assumed to take one cycle here.)
@@ -37,13 +40,18 @@
 
 #### 5. **Example: Code and Logic Comparison**
    - The code in TL-Verilog mirrors the conceptual diagram of a pipeline. You define the pipeline stages, and within those stages, you describe the operations.
+     ![image](https://github.com/user-attachments/assets/20de4c1a-a9df-4ce6-89cf-3bddf6d7dd1b)
+
    - **Traditional RTL Code**:
      - You have to explicitly manage when the squaring, adding, and square-rooting happens, and manually add flip-flops between stages.
    - **TL-Verilog Code**:
      - The stages are defined abstractly, and the flip-flops are implied based on how you structure the stages.
    - This leads to **code reduction**, as TL-Verilog eliminates the need to manually code flip-flops and timing management. This reduction in code improves readability, decreases bugs, and speeds up the design process.
+![image](https://github.com/user-attachments/assets/319a2db0-bcfa-43e6-ac73-4828e06cb67d)
 
 #### 6. **Timing Abstraction and Flexibility in TL-Verilog**:
+![image](https://github.com/user-attachments/assets/3352ee0d-4d0f-4c7f-9504-4ef59eb0f525)
+
    - The **main benefit** of TL-Verilog's timing abstraction is the separation of **function** from **timing**.
      - **Function**: The operations you want to perform (squaring, adding, square rooting) stay the same.
      - **Timing**: The pipeline stages that define when these operations occur (e.g., squaring in stage 1, adding in stage 2) can be adjusted independently without changing the logic of the circuit.
@@ -78,6 +86,8 @@
 #  Understanding Pipeline Benefits and Waveform Analysis
 
 #### 1. **Pipelining for High Clock Frequency & Performance**
+![image](https://github.com/user-attachments/assets/d8d81130-5445-49b3-acf1-b1126d415292)
+
    - When your clock is running too fast for your logic to execute within a single clock cycle, **pipelining** is needed. 
    - **Pipelines** not only solve timing issues but also provide **performance benefits** by allowing designs to run at **higher clock frequencies**.
    - **Combinational logic** between flip-flops limits the clock speed. The **time between flip-flops** defines the **clock frequency**.
@@ -95,9 +105,13 @@
      - **Stage 3**: Compute the square root of the sum.
 
 #### 4. **Waveform Viewer in Makerchip**
+![image](https://github.com/user-attachments/assets/9ee50ba5-da48-45a0-bb2c-eae6304d4e08)
+
    - Makerchip provides a **waveform viewer** to visualize the pipeline behavior over time.
+     ![image](https://github.com/user-attachments/assets/10ef5aa4-9d74-4779-aefe-d3694b357fa0)
    - In a pipeline, **data is distributed across time**, meaning that inputs at an earlier stage impact outputs at a later stage.
    - The **waveform viewer** lets you track how inputs (e.g., `a` and `b`) at different stages of the pipeline correspond to outputs (e.g., `c`) a few clock cycles later.
+![image](https://github.com/user-attachments/assets/90682776-171a-4910-8794-ecb26ca01006)
 
 #### 5. **Understanding Timing and Signal Alignment**
    - **Combinational Logic (Single Cycle)**: In the example, if all computations are done in **one cycle** (non-pipelined), the logic to compute `c` (squaring `a` and `b`, adding, and taking the square root) occurs in a single clock cycle.
@@ -130,6 +144,8 @@
    - In this case, **delayed versions** of signals (e.g., `a_4`, `a_12`) are used, indicating data that has passed through the pipeline for several stages.
 
 #### 10. **Visualizing Feedback and Pipeline Depth**
+![image](https://github.com/user-attachments/assets/d3b3f688-4d87-4744-9cae-4fb5d1a9e49a)
+
    - In the Makerchip platform, you can visualize **feedback loops** and track how signals are staged through multiple flip-flops.
    - The feedback loop might refer to the version of a signal from **4, 12, or more cycles ahead**, creating complex interactions across different stages.
 
@@ -147,6 +163,123 @@
 - The **waveform viewer** in Makerchip helps correlate inputs and outputs at different stages of the pipeline, allowing designers to track data flow over time.
 - **Feedback loops** enable more complex sequential logic, where later-stage results are fed back into earlier stages for future computations.
 
+#### 1. **TL-Verilog Syntax Basics: Pipe Signals**
+   - **Naming Conventions**:
+     ![image](https://github.com/user-attachments/assets/47a81fd6-ff51-453f-aec3-3894a48ee397)
+
+     - In TL-Verilog, identifiers follow a specific syntax based on their role in the design.
+     - **Pipe Signals**: These signals represent values that travel through the pipeline stages and are named using **lowercase letters** with **underscores** as delimiters between tokens.
+       - **Example**: A pipe signal would be written as `a_pipe_signal`, with `a` being the base and `pipe_signal` indicating the role and function.
+     - **State Signals**: These signals store state values (not part of the current topic) and follow a **camelCase** or **PascalCase** naming convention. In TL-Verilog, PascalCase (where each token, including the first, starts with an uppercase letter) is the recommended style for these signals.
+       - **Example**: `StateSignal` or `ComputeValue` would represent state signals.
+     - **Uppercase Identifiers**: While not discussed in this session, uppercase identifiers follow a similar convention but are fully capitalized with underscore delimitation, typically used for constants or macros in designs.
+       - **Example**: `CONSTANT_VALUE` or `MAX_DEPTH`.
+   
+   - **Numeric Identifiers**:
+     - TL-Verilog allows **numbers** to be included in signal names but only at the **end of a token**. For example, `base64` is valid, but identifiers cannot **start with a number** or have numbers standing alone without accompanying text.
+
+---
+#### 2. **Pipeline Stages in TL-Verilog**
+   - **Implicit vs Explicit Pipelining**:
+     - In TL-Verilog, **all logic** is inherently in a pipeline, even when you do not explicitly define it. By default, computations are assigned to **stage 0** of the pipeline unless you specify otherwise.
+     - **Explicit Pipeline Declaration**:
+       - When explicitly defining pipeline stages, you designate where in the pipeline certain logic is performed.
+       - **Example**:
+         - Instead of performing all operations in stage 0, you can define `@1` to specify that logic belongs to **pipeline stage 1**.
+         - If an operation takes multiple cycles, you can split it into stages, such as stage 1 for computation and stage 3 for additional checks (like overflow detection).
+       - **Pipeline Depth**: This becomes useful for **deep pipelines** (multi-cycle operations), where different logic blocks occur in different stages, improving the design's performance and clock speed.
+
+   - **Pipeline Signals**:
+     - Signals that are processed in different stages of the pipeline are **propagated** through the stages. These signals are stored in **flip-flops** between stages, and their values are computed in sequence as they move down the pipeline.
+
+---
+
+#### 3. **Example: Fibonacci Series in a Pipeline**
+![image](https://github.com/user-attachments/assets/57813154-9388-441e-a5f6-4545d2049023)
+
+   - **Pipeline Setup**:
+     - The Fibonacci series is computed sequentially, with each term relying on the values of the previous terms.
+     - The pipeline handles these computations across multiple stages.
+       - **Stage 1**: Compute the sum of the last two Fibonacci numbers.
+       - **Stage 2 (optional)**: Store the result in a register (flip-flop) for the next iteration.
+     - **Simplified Example**: Let’s say Fibonacci `Fn = Fn-1 + Fn-2` is computed at stage 1. The result is fed into stage 2 for storage and further computation.
+   
+   - **Difference from Non-Pipelined Version**:
+     - In the earlier non-pipelined version, all logic was implicitly placed in **stage 0**. The design lacked the explicit assignment of pipeline stages, making it difficult to manage deep pipelines and more complex computation.
+     - The **pipelined version** explicitly declares where each piece of logic occurs (e.g., `@1`, `@2`, etc.), making it more modular and scalable.
+
+---
+
+#### 4. **Error Handling in Deep Pipelines**
+   - **Multi-Stage Error Conditions**:
+     - In pipelines, different stages can encounter various conditions, such as:
+       - **Bad Input**: In stage 1, an invalid input could trigger an error.
+       - **Overflow**: In stage 3, an arithmetic overflow condition might arise.
+       - **Divide-by-Zero**: In stage 6, a divide-by-zero error might occur during computation.
+   
+   - **Error Signal Aggregation**:
+     - When different error conditions are detected across stages, the pipeline must aggregate these errors into a single output signal indicating an error has occurred.
+     - **Example**:
+       - Let’s assume that in stages 3 and 6, the pipeline detects `error_stage3` and `error_stage6`, respectively.
+       - To manage these conditions, the errors are **aggregated** using an OR gate. If any of these errors occur, the `error` signal in stage 6 will assert.
+
+   - **TL-Verilog Code**:
+     - In TL-Verilog, this error detection could be coded as:
+
+```
+      @1
+
+         $err1 = ($bad_input || $illegal_op) ? 1 : 0;
+       
+      @3
+     
+         $err2 = ($err1 || $overflow) ? 1 : 0;
+     
+         //$err2 = (>>2$err1 || $overflow) ? 1 : 0;
+     
+         //when u do this, err1 value from 2 cycles after the current cycle is considered (not from 1st cycle) - so its wrong
+     
+      @6
+     
+         $err3 = ($divby0 || $err2) ? 1 : 0; 
+         
+```
+![image](https://github.com/user-attachments/assets/864fdec2-cf95-4d71-ab64-f84e735a7e6f)
+       
+  - The error conditions from different stages (`@3`, `@6`) are ORed together in stage 6 to produce the final error signal.
+   
+   - **Using the Waveform Viewer**:
+     - The **waveform viewer** in Makerchip helps visualize how these error conditions propagate through the pipeline. When any of the error conditions are detected at their respective stages, the final `error` signal should reflect this, allowing for debugging and validation of the design.
+
+---
+
+#### 5. **Coding Up Logic for Error Handling**
+   - **Example Scenario**:
+     - The provided example circuit handles error conditions across a **six-stage** pipeline.
+     - Error conditions are detected in:
+       - **Stage 3**: Overflow or illegal operation.
+       - **Stage 6**: Divide by zero.
+     - The final error signal (`error3`) in stage 6 indicates if any error occurred.
+   
+   - **Logic for Error Conditions**:
+     - The **blue circles** in the diagram represent OR gates, combining the error conditions.
+     - The **red circles** represent input conditions, which are assumed to be predefined in the pipeline.
+     - The logic could be coded up as follows:
+       ```verilog
+       @3
+       error_stage3 <= illegal_operation | overflow;
+       
+       @6
+       error_stage6 <= divide_by_zero;
+       
+       @6
+       error3 <= error_stage3 | error_stage6;
+       ```
+     - **Waveform Check**:
+       - After coding up the logic, use the waveform viewer to inspect the behavior of the error signals.
+       - The **final error signal (`error3`)** should assert whenever any of the error conditions in stages 3 or 6 are triggered.
+
+---
 ## Pipeline Calculator Circuit Example in TL-Verilog
 
 #### 1. **Starting Point: Calculator and Counter in Pipeline**
@@ -203,13 +336,16 @@
    - **Valid Signal**: The **valid signal** ensures that computations only happen on designated cycles, and the circuit outputs zero during idle cycles.
    - **Multiplexer Re-Timing**: Moving the multiplexer to the second stage separates the operation from the selection, ensuring that timing constraints are met without overloading a single pipeline stage.
 # Labs
-![image](https://github.com/user-attachments/assets/9ee50ba5-da48-45a0-bb2c-eae6304d4e08)
-![image](https://github.com/user-attachments/assets/90682776-171a-4910-8794-ecb26ca01006)
 ![image](https://github.com/user-attachments/assets/9ff380e3-fb31-4299-955f-4339d7023c60)
 ![image](https://github.com/user-attachments/assets/de0a94aa-9026-462f-b5ee-d6b186c03938)
 ![image](https://github.com/user-attachments/assets/d76909fb-3a7f-471b-8290-d85e07d4f133)
 ![image](https://github.com/user-attachments/assets/7eb0357c-a8d1-4088-9b06-e12921b7687d)
 ![image](https://github.com/user-attachments/assets/f7920203-dff4-45b4-9e1b-eb356442678a)
+
+
+
+
+
 
 
 
