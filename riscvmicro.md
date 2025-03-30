@@ -6,6 +6,7 @@
 ---
 
 ### **2. Key Components in the Microarchitecture**
+![image](https://github.com/user-attachments/assets/f467d11e-60f3-4e84-af70-8576a895a78b)
 
 #### **A. Program Counter (PC)**
 - The **Program Counter (PC)** is a register that holds the address of the **next instruction** to be executed.
