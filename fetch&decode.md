@@ -121,7 +121,11 @@ The first component to implement is the **Next PC Logic**.
 ### **8. Expected Output**
 - At this stage, you should see the **PC** increment properly during simulation.
 - Depending on what default logic you have, the **instructions themselves** may not be visible yet. This will be addressed when you add **default decode logic** in the next step.
-  
+---
+  # Labs Fetch Logic
+![image](https://github.com/user-attachments/assets/47370ade-9759-4c96-af4f-ca8bf18d678c)
+## Solution
+
 ### **Summary of Key Steps:**
 - **Uncomment** the instruction memory instantiation and CPU visualization.
 - **Compile** the code to see what errors arise related to missing signal hookups.
