@@ -739,3 +739,427 @@ For each field, you need to create expressions to pull out the bits from the ins
          $rd[4:0] = $instr[11:7]; //destination reg
          $opcode[6:0] = $instr[6:0]; //opcode required to instruct the alu
 ```
+# PC + instr fetch + decode unit (with validity check)
+## Solution
+![image](https://github.com/user-attachments/assets/ca99e5a1-f1e8-4429-9ae0-6a5e68ea2c1b)
+```
+ @0
+         $reset = *reset;
+         
+         
+         $pc[31:0] = (>>1$reset) ? 32'd0 : (>>1$pc + 32'd4);
+         //curr pc = (is prev reset value true) ? if yes, curr pc = 0 : if not, curr pc = prev pc + 4 (4 locations = 1 instr)
+         
+      @1
+         $imem_rd_en = ! $reset;  //active low reset - it considers the prev reset value
+         
+         //input the address - its not pc directly since pc is always a multiple of 4
+         //$imem_rd_addr[7:0] = $pc; //gives wrong ans - in instr mem - every index is considered 4 bytes (not 1 byte) so divide pc by 4 necessary
+         $imem_rd_addr[7:0] = $pc / 4 ; 
+         //after observing the waveform: it seems the addr in the mem = 8 only
+         //so as pc = 8*4 = 32 --> instr extracted is the first instr cuz : (32/4)mod8 = 0 (mod8 since only 8 instrs)
+         
+         //get the instruction from the instr mem
+         $instr[31:0] = $imem_rd_data[31:0]; 
+         
+         //opcode in any instr format is 7 bits long but we consider only 5 bits
+         //the part of instr that we need to decode the instr format = instr[6:2]
+         //instr[1:0] is always 11 for base instr set, hence ignored
+         
+         $is_i_instr = $instr[6:2] ==? 5'b0000x || //this takes care of 5'b00000 and 5'b00001
+                       $instr[6:2] ==? 5'b001x0 || //5'b00100 and 5'b00110
+                       $instr[6:2] ==? 5'b11001 ||
+                       $instr[6:2] ==? 5'b00100 ; 
+         
+         $is_r_instr = $instr[6:2] ==? 5'b01011 ||
+                       $instr[6:2] ==? 5'b011x0 || //5'b01100 and 5'b01110
+                       $instr[6:2] ==? 5'b10100 ;
+         
+         $is_s_instr = $instr[6:2] ==? 5'b0100x ; //5'b01000 and 5'b01001
+         
+         $is_b_instr = $instr[6:2] ==? 5'b11000 ;
+         
+         $is_j_instr = $instr[6:2] ==? 5'b11011 ;
+         
+         $is_u_instr = $instr[6:2] ==? 5'b0x101 ; //5'b00101 and 5'b01101
+         
+         //getting the immediate values and sign extending them
+         //Eg: {21{$instr[31]} , $instr[30:20]} --> 12 bit imm, msb = instr[31] -> sign extend = {21{msb}}
+         //instr[30:20] = give lower 11 (30-20+1) bits
+         //r instr doesn't have any imm values
+         $imm[31:0] = $is_i_instr ? { {21{$instr[31]}}, $instr[30:20] } : //12 bits for i type - immediate is one of the operands
+                      $is_s_instr ? { {21{$instr[31]}}, $instr[30:25], $instr[11:7] } : //12 bits for s type - imm gives offset for calc effective address to store value
+                      $is_b_instr ? { {20{$instr[31]}}, $instr[7], $instr[31:25], $instr[11:8], 1'b0 } : //13 bits for b type - imm gives pc relative offset to branch required label/instr
+                      $is_u_instr ? { $instr[31:12] , 12'b0 } : //20 bits for u type - imm gives upper 20 bits of a 32 bit value 
+                      $is_j_instr ? { {12{$instr[31]}}, $instr[19:12], $instr[20], $instr[30:21], 1'b0 } : //21 bits for j type - imm gives the pc relative addr to jump to 
+                      32'b0 ; //if none of the instrs mentioned (if rtype), then imm is 0 - if this condition isn't there - ternary op is not complete - throws error
+         
+         //extracting other fields of instr
+         //risc v is a regular ISA, which means most fields are consistent in their bit positions for all instr types except for immediate field
+         //hence other fields of instr don't need to type based conditions
+         $funct7[6:0] = $instr[31:25]; 
+         $funct3[2:0] = $instr[14:12];
+         $rs1[4:0] = $instr[19:15]; //source reg 1 - only 32 reg in total, so 5 bits to represent them
+         $rs2[4:0] = $instr[24:20]; //source reg 2
+         $rd[4:0] = $instr[11:7]; //destination reg
+         $opcode[6:0] = $instr[6:0]; //opcode required to instruct the alu
+```
+## PC + instr fetch + decode unit (validity check + individual instr decode)
+### Solution
+![image](https://github.com/user-attachments/assets/1b99f839-ec0c-4228-b273-24ddadf65516)
+```
+   |cpu
+      @0
+         $reset = *reset;
+         
+         
+         $pc[31:0] = (>>1$reset) ? 32'd0 : (>>1$pc + 32'd4);
+         //curr pc = (is prev reset value true) ? if yes, curr pc = 0 : if not, curr pc = prev pc + 4 (4 locations = 1 instr)
+         
+      @1
+         $imem_rd_en = ! $reset;  //active low reset - it considers the prev reset value
+         
+         //input the address - its not pc directly since pc is always a multiple of 4
+         //$imem_rd_addr[7:0] = $pc; //gives wrong ans - in instr mem - every index is considered 4 bytes (not 1 byte) so divide pc by 4 necessary
+         $imem_rd_addr[7:0] = $pc / 4 ; 
+         //$imem_rd_addr[7:0] = $pc >> 4 ; //this works too 
+         //after observing the waveform: it seems the addr in the mem = 8 only
+         //so as pc = 8*4 = 32 --> instr extracted is the first instr cuz : (32/4)mod8 = 0 (mod8 since only 8 instrs)
+         
+         //get the instruction from the instr mem
+         $instr[31:0] = $imem_rd_data[31:0]; 
+         
+         //opcode in any instr format is 7 bits long but we consider only 5 bits
+         //the part of instr that we need to decode the instr format = instr[6:2]
+         //instr[1:0] is always 11 for base instr set, hence ignored
+         
+         $is_i_instr = $instr[6:2] ==? 5'b0000x || //this takes care of 5'b00000 and 5'b00001
+                       $instr[6:2] ==? 5'b001x0 || //5'b00100 and 5'b00110
+                       $instr[6:2] ==? 5'b11001 ||
+                       $instr[6:2] ==? 5'b00100 ; 
+         
+         $is_r_instr = $instr[6:2] ==? 5'b01011 ||
+                       $instr[6:2] ==? 5'b011x0 || //5'b01100 and 5'b01110
+                       $instr[6:2] ==? 5'b10100 ;
+         
+         $is_s_instr = $instr[6:2] ==? 5'b0100x ; //5'b01000 and 5'b01001
+         
+         $is_b_instr = $instr[6:2] ==? 5'b11000 ;
+         
+         $is_j_instr = $instr[6:2] ==? 5'b11011 ;
+         
+         $is_u_instr = $instr[6:2] ==? 5'b0x101 ; //5'b00101 and 5'b01101
+         
+         //getting the immediate values and sign extending them
+         //Eg: {21{$instr[31]} , $instr[30:20]} --> 12 bit imm, msb = instr[31] -> sign extend = {21{msb}}
+         //instr[30:20] = give lower 11 (30-20+1) bits
+         //r instr doesn't have any imm values
+         
+         //imm field is not valid for rtype
+         $imm_valid = $is_r_instr ? 1'b0 : 1'b1 ; 
+         ?$imm_valid
+            $imm[31:0] = $is_i_instr ? { {21{$instr[31]}}, $instr[30:20] } : //12 bits for i type - immediate is one of the operands
+                         $is_s_instr ? { {21{$instr[31]}}, $instr[30:25], $instr[11:7] } : //12 bits for s type - imm gives offset for calc effective address to store value
+                         $is_b_instr ? { {20{$instr[31]}}, $instr[7], $instr[31:25], $instr[11:8], 1'b0 } : //13 bits for b type - imm gives pc relative offset to branch required label/instr
+                         $is_u_instr ? { $instr[31:12] , 12'b0 } : //20 bits for u type - imm gives upper 20 bits of a 32 bit value 
+                         $is_j_instr ? { {12{$instr[31]}}, $instr[19:12], $instr[20], $instr[30:21], 1'b0 } : //21 bits for j type - imm gives the pc relative addr to jump to 
+                         32'b0 ; //if none of the instrs mentioned (if rtype), then imm is 0 - if this condition isn't there - ternary op is not complete - throws error
+         
+         //extracting other fields of instr
+         //risc v is a regular ISA, which means most fields are consistent in their bit positions for all instr types except for immediate field
+         //hence other fields of instr don't need to type based conditions
+         
+         //funct7 is valid only for rtype
+         $funct7_valid = $is_r_instr ? 1'b1 : 1'b0 ; // condition ? if true : if false
+         ?$funct7_valid
+            $funct7[6:0] = $instr[31:25]; 
+         
+         //this is the only signal that is in my code and not told in the workshop 
+         //funct3, rs1, rs2 is invalid for u_type and j type in common, so define a common signal
+         $u_or_j = $is_u_instr || $is_j_instr ; 
+         
+         //funct3 is invalid for u type and j type
+         $funct3_valid = $u_or_j ? 1'b0 : 1'b1 ;
+         ?$funct3_valid
+            $funct3[2:0] = $instr[14:12];
+         
+         //rs1 is invalid for u type and j type
+         $rs1_valid = $u_or_j ? 1'b0 : 1'b1 ;
+         ?$rs1_valid
+            $rs1[4:0] = $instr[19:15]; //source reg 1 - only 32 reg in total, so 5 bits to represent them
+         
+         //rs2 is valid for rtype, stype and btype only OR rs2 is invalid for u type, j type and i type - im using this variant since ive define uorj signal already
+         //any of the above two is fine
+         $rs2_valid = ($u_or_j || $is_i_instr) ? 1'b0 : 1'b1; 
+         ?$rs2_valid
+            $rs2[4:0] = $instr[24:20]; //source reg 2
+         
+         //rd is invalid for stype and btype
+         $rd_valid = ($is_s_instr || $is_b_instr) ? 1'b0 : 1'b1; 
+         ?$rd_valid
+            $rd[4:0] = $instr[11:7]; //destination reg
+         
+         //opcode is valid for all instr types, so no validity check 
+         $opcode[6:0] = $instr[6:0]; //opcode required to instruct the alu
+         
+         //now decode individual instrs - only few instrs from RV32I are considered - others can be added later
+         //collect the bits required for decoding - funct7[5], func3, opcode
+         $dec_bits[10:0] = { $funct7[5], $funct3, $opcode }; //if index range not specified - means consider all bits of that field
+         
+         //add, addi (arithmetic instrs)
+         $is_add = $dec_bits == 11'b0_000_0110011;
+         $is_addi = $dec_bits ==? 11'bx_000_0010011; //==? is verilog operation for comparing against don't cares, it works even when there is not don't care
+         //for addi, funct7[5] can be 0 or 1, it doesn't matter - so x (don't care) is used
+         
+         //branch variants 
+         $is_beq = $dec_bits ==? 11'bx_000_1100011;
+         $is_bne = $dec_bits ==? 11'bx_001_1100011;
+         $is_blt = $dec_bits ==? 11'bx_100_1100011;
+         $is_bge = $dec_bits ==? 11'bx_101_1100011;
+         $is_bltu = $dec_bits ==? 11'bx_110_1100011;
+         $is_bgeu = $dec_bits ==? 11'bx_111_1100011;
+         
+         
+```
+
+## Single cycle risc v that computes the sum of numbers from 1 to 9
+### Solution
+![image](https://github.com/user-attachments/assets/301cd7a9-9844-496b-8e26-2e12cfd6e3cf)
+```
+\m4_TLV_version 1d: tl-x.org
+\SV
+   // This code can be found in: https://github.com/stevehoover/RISC-V_MYTH_Workshop
+   
+   m4_include_lib(['https://raw.githubusercontent.com/BalaDhinesh/RISC-V_MYTH_Workshop/master/tlv_lib/risc-v_shell_lib.tlv'])
+
+\SV
+   m4_makerchip_module   // (Expanded in Nav-TLV pane.)
+\TLV
+
+   // /====================\
+   // | Sum 1 to 9 Program |
+   // \====================/
+   //
+   // Program for MYTH Workshop to test RV32I
+   // Add 1,2,3,...,9 (in that order).
+   //
+   // Regs:
+   //  r10 (a0): In: 0, Out: final sum
+   //  r12 (a2): 10
+   //  r13 (a3): 1..10
+   //  r14 (a4): Sum
+   // 
+   // External to function:
+   m4_asm(ADD, r10, r0, r0)             // Initialize r10 (a0) to 0.
+   // Function:
+   m4_asm(ADD, r14, r10, r0)            // Initialize sum register a4 with 0x0
+   m4_asm(ADDI, r12, r10, 1010)         // Store count of 10 in register a2.
+   m4_asm(ADD, r13, r10, r0)            // Initialize intermediate sum register a3 with 0
+   // Loop:
+   m4_asm(ADD, r14, r13, r14)           // Incremental addition
+   m4_asm(ADDI, r13, r13, 1)            // Increment intermediate register by 1
+   //to check if taken_br logic works, check instr 6 in waveform
+   m4_asm(BLT, r13, r12, 1111111111000) // If a3 is less than a2, branch to label named <loop>
+   m4_asm(ADD, r10, r14, r0)            // Store final result to register a0 so that it can be read by main program
+   //to check the final result, see the waveform (in the last 7 value of imm_rd_addr, rd (x10) will have 2d (45 in dec)
+   
+   // Optional:
+   // m4_asm(JAL, r7, 00000000000000000000) // Done. Jump to itself (infinite loop). (Up to 20-bit signed immediate plus implicit 0 bit (unlike JALR) provides byte address; last immediate bit should also be 0)
+   m4_define_hier(['M4_IMEM'], M4_NUM_INSTRS)
+
+   //NOTE: WE'RE IMPLEMENTING RV32I means each reg = 32 bit long
+   //code for Program counter (PC) and getting instr from instr mem (instr mem interfacing)
+   //adding decode unit - opcode, imm, other fields - modify such that a field will be valid based on instr type (eg. imm is invalid for rtype)
+   //decoding individual instrs
+   //register file read/write - interfacing
+   //add alu operations + add branch instrs + modify pc
+   
+   |cpu
+      @0
+         $reset = *reset;
+         
+         
+         $pc[31:0] = (>>1$reset) ? 32'd0 : 
+                     (>>1$taken_br) ? (>>1$br_tgt_pc): 
+                     (>>1$pc + 32'd4);
+         //curr pc = (is prev reset value true) ? if yes, curr pc = 0 : if not, is branch taken? yes, pc = branch target addr of prev instr : no, curr pc = prev pc + 4 (4 locations = 1 instr)
+         //i need to consider the prev taken br and prev br target addr, cuz pc operates @0, but all computation is done @1 --> so curr pc always gives next instr addr , hence consider prev instr for branching
+      @1
+         $imem_rd_en = ! $reset;  //active low reset - it considers the prev reset value
+         
+         //input the address - its not pc directly since pc is always a multiple of 4
+         //$imem_rd_addr[7:0] = $pc; //gives wrong ans - in instr mem - every index is considered 4 bytes (not 1 byte) so divide pc by 4 necessary
+         $imem_rd_addr[7:0] = $pc / 4 ; 
+         //$imem_rd_addr[7:0] = $pc >> 4 ; //this works too 
+         //after observing the waveform: it seems the addr in the mem = 8 only
+         //so as pc = 8*4 = 32 --> instr extracted is the first instr cuz : (32/4)mod8 = 0 (mod8 since only 8 instrs)
+         
+         //get the instruction from the instr mem
+         $instr[31:0] = $imem_rd_data[31:0]; 
+         
+         //opcode in any instr format is 7 bits long but we consider only 5 bits
+         //the part of instr that we need to decode the instr format = instr[6:2]
+         //instr[1:0] is always 11 for base instr set, hence ignored
+         
+         $is_i_instr = $instr[6:2] ==? 5'b0000x || //this takes care of 5'b00000 and 5'b00001
+                       $instr[6:2] ==? 5'b001x0 || //5'b00100 and 5'b00110
+                       $instr[6:2] ==? 5'b11001 ||
+                       $instr[6:2] ==? 5'b00100 ; 
+         
+         $is_r_instr = $instr[6:2] ==? 5'b01011 ||
+                       $instr[6:2] ==? 5'b011x0 || //5'b01100 and 5'b01110
+                       $instr[6:2] ==? 5'b10100 ;
+         
+         $is_s_instr = $instr[6:2] ==? 5'b0100x ; //5'b01000 and 5'b01001
+         
+         $is_b_instr = $instr[6:2] ==? 5'b11000 ;
+         
+         $is_j_instr = $instr[6:2] ==? 5'b11011 ;
+         
+         $is_u_instr = $instr[6:2] ==? 5'b0x101 ; //5'b00101 and 5'b01101
+         
+         //getting the immediate values and sign extending them
+         //Eg: {21{$instr[31]} , $instr[30:20]} --> 12 bit imm, msb = instr[31] -> sign extend = {21{msb}}
+         //instr[30:20] = give lower 11 (30-20+1) bits
+         //r instr doesn't have any imm values
+         
+         //imm field is not valid for rtype
+         $imm_valid = $is_r_instr ? 1'b0 : 1'b1 ; 
+         ?$imm_valid
+            $imm[31:0] = $is_i_instr ? { {21{$instr[31]}}, $instr[30:20] } : //12 bits for i type - immediate is one of the operands
+                         $is_s_instr ? { {21{$instr[31]}}, $instr[30:25], $instr[11:7] } : //12 bits for s type - imm gives offset for calc effective address to store value
+                         $is_b_instr ? { {20{$instr[31]}}, $instr[7], $instr[31:25], $instr[11:8], 1'b0 } : //13 bits for b type - imm gives pc relative offset to branch required label/instr
+                         $is_u_instr ? { $instr[31:12] , 12'b0 } : //20 bits for u type - imm gives upper 20 bits of a 32 bit value 
+                         $is_j_instr ? { {12{$instr[31]}}, $instr[19:12], $instr[20], $instr[30:21], 1'b0 } : //21 bits for j type - imm gives the pc relative addr to jump to 
+                         32'b0 ; //if none of the instrs mentioned (if rtype), then imm is 0 - if this condition isn't there - ternary op is not complete - throws error
+         
+         //extracting other fields of instr
+         //risc v is a regular ISA, which means most fields are consistent in their bit positions for all instr types except for immediate field
+         //hence other fields of instr don't need to type based conditions
+         
+         //funct7 is valid only for rtype
+         $funct7_valid = $is_r_instr ? 1'b1 : 1'b0 ; // condition ? if true : if false
+         ?$funct7_valid
+            $funct7[6:0] = $instr[31:25]; 
+         
+         //this is the only signal that is in my code and not told in the workshop 
+         //funct3, rs1, rs2 is invalid for u_type and j type in common, so define a common signal
+         $u_or_j = $is_u_instr || $is_j_instr ; 
+         
+         //funct3 is invalid for u type and j type
+         $funct3_valid = $u_or_j ? 1'b0 : 1'b1 ;
+         ?$funct3_valid
+            $funct3[2:0] = $instr[14:12];
+         
+         //rs1 is invalid for u type and j type
+         $rs1_valid = $u_or_j ? 1'b0 : 1'b1 ;
+         ?$rs1_valid
+            $rs1[4:0] = $instr[19:15]; //source reg 1 - only 32 reg in total, so 5 bits to represent them
+         
+         //rs2 is valid for rtype, stype and btype only OR rs2 is invalid for u type, j type and i type - im using this variant since ive define uorj signal already
+         //any of the above two is fine
+         $rs2_valid = ($u_or_j || $is_i_instr) ? 1'b0 : 1'b1; 
+         ?$rs2_valid
+            $rs2[4:0] = $instr[24:20]; //source reg 2
+         
+         //rd is invalid for stype and btype
+         $rd_valid = ($is_s_instr || $is_b_instr) ? 1'b0 : 1'b1; 
+         ?$rd_valid
+            $rd[4:0] = $instr[11:7]; //destination reg
+         
+         //opcode is valid for all instr types, so no validity check 
+         $opcode[6:0] = $instr[6:0]; //opcode required to instruct the alu
+         
+         //now decode individual instrs - only few instrs from RV32I are considered - others can be added later
+         //collect the bits required for decoding - funct7[5], func3, opcode
+         $dec_bits[10:0] = { $funct7[5], $funct3, $opcode }; //if index range not specified - means consider all bits of that field
+         
+         //add, addi (arithmetic instrs)
+         $is_add = $dec_bits == 11'b0_000_0110011;
+         $is_addi = $dec_bits ==? 11'bx_000_0010011; //==? is verilog operation for comparing against don't cares, it works even when there is not don't care
+         //for addi, funct7[5] can be 0 or 1, it doesn't matter - so x (don't care) is used
+         
+         //branch variants 
+         $is_beq = $dec_bits ==? 11'bx_000_1100011;
+         $is_bne = $dec_bits ==? 11'bx_001_1100011;
+         $is_blt = $dec_bits ==? 11'bx_100_1100011;
+         $is_bge = $dec_bits ==? 11'bx_101_1100011;
+         $is_bltu = $dec_bits ==? 11'bx_110_1100011;
+         $is_bgeu = $dec_bits ==? 11'bx_111_1100011;
+         
+         //REGISTER FILE interfacing
+         //I'm reusing field validity check signals
+         
+         //INPUT SIGNALS - reg file
+         //write signals 
+         //NOTE: x0 reg in risc v is hardwired to 0, so writes are ignored and read is always 0
+         //wr_en = 0 if rd = x0 - changing wr_en along is not disabling write (reg is still written into when r0 is rd - check rf_wr_data field in waveform)
+         $rf_wr_en = ($rd == 5'd0) ? 1'b0 : $rd_valid;  //write into the register file only if rd is a valid field
+         $rf_wr_index[4:0] = $rd; //address of the dest reg
+         //check the wr_en signal - if its 0, don't write into the register, else, write
+         $rf_wr_data[31:0] =  $rf_wr_en ? $result : 32'd0; //this is actually the output of the alu - the result
+         
+         //read signals
+         $rf_rd_en1 = $rs1_valid; //read rs1 from reg file only if rs1 is a valid field in the instr
+         $rf_rd_index1[4:0] = $rs1; //address of source reg 1
+         $rf_rd_en2 = $rs2_valid; //read rs2 from reg file only if rs2 is a valid field
+         $rf_rd_index2[4:0] = $rs2; //address of source reg 2
+         
+         //OUTPUT SIGNALS - reg file - inputs to the ALU
+         $src1_value[31:0] = $rf_rd_data1; //rs1 value
+         $src2_value[31:0] = $rf_rd_data2; //rs2 value
+         
+         //ALU 
+         //operations: add, addi (others are added later)
+         $result[31:0] = $is_addi ? ($src1_value + $imm) : //rd <-- rs1 + imm
+                         $is_add ? ($src1_value + $src2_value) : //rd <-- rs1 + rs2
+                         32'bx ; //if none of the above instrs, result is don't care
+                         
+         //logic to specify if a branch is taken or not
+         $taken_br = (! $is_b_instr) ? 1'b0 :
+                      $is_beq ? ($src1_value == $src2_value) :
+                      $is_bne ? ($src1_value != $src2_value) :
+                      $is_blt ? ( ($src1_value < $src2_value) ^ ($src1_value[31] != $src2_value[31]) ) : // for signed comparisons
+                      $is_bge ? ( ($src1_value >= $src2_value) ^ ($src1_value[31] != $src2_value[31]) ) : //for signed comparison
+                      $is_bltu ? ($src1_value < $src2_value) : //unsigned comparisons only
+                      $is_bgeu ? ($src1_value >= $src2_value) : //usigned comparisons
+                      1'b0 ; //default condition
+         //how does the expression for signed comparison work? 
+         //a<b or a>=b does unsigned comparison, so we need another expression to account for signed values
+         //31st bit = msb, consider a, b, if msb(a) = 1 and msb(b) = 0, then term 2 in the expression = 1
+         //the expression now becomes: term1 xor 1 (property : 1 xor A = A' - Abar/ complement), so whatever the term1 evaluates, final output is opposite of that
+         //eg: if a(-ve) and b(+ve) , then a<b is 0 (unsigned comparison)  but considering the signs: a<b = 1 cuz -ve < +ve always
+         //same logic can be applied when a(+ve) and b(-ve) and for bge
+         
+         //calculate the branch target address (for current pc)
+         //if branch is taken for curr instr, then next pc is changed
+         $br_tgt_pc[31:0] = $pc + $imm ; 
+         
+         
+
+
+   
+   // Assert these to end simulation (before Makerchip cycle limit).
+   //*passed = *cyc_cnt > 40;
+   //how to tell makerchip that the simulation has passed? 1. manually check the waveforms, 2. do the following (a simple check)
+   *passed = |cpu/xreg[10]>>5$value == (1+2+3+4+5+6+7+8+9) ; //monitors xreg[10], when the value reaches the RHS at say nth cycle, it tells it on (n+5)th cycle
+   //tell - means, passed msg appears in LOG
+   *failed = 1'b0;
+   
+   // Macro instantiations for:
+   //  o instruction memory
+   //  o register file
+   //  o data memory
+   //  o CPU visualization
+   |cpu
+      //these are all the arrays required for building the cpu
+      //this is the instr mem
+      m4+imem(@1)    // Args: (read stage) 
+      //this is the register file
+      m4+rf(@1, @1)  // Args: (read stage, write stage) - if equal, no register bypass is required 
+      //m4+dmem(@4)    // Args: (read/write stage)
+
+   //m4+cpu_viz(@4)    // For visualisation, argument should be at least equal to the last stage of CPU logic. @4 would work for all labs.
+\SV
+   endmodule
+```
