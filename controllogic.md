@@ -1,5 +1,6 @@
 # Control Logic
 ## **Register File Read Process:**
+![image](https://github.com/user-attachments/assets/0147b811-c926-4e09-9d52-184febb74da6)
 
 #### **1. Purpose of Register File Read:**
 - After decoding the instruction, the next step is to **read from the register file** based on the **source registers** specified by the instruction.
@@ -135,6 +136,9 @@
   
 - Understanding this **write-read separation** in the pipeline helps ensure that the CPU operates correctly, with each instruction reading the correct, most recently updated values.
 
+## Labs
+![image](https://github.com/user-attachments/assets/30095a17-9a93-492b-a14e-e212a36d029b)
+### Solution
 
 ## **Branch Instructions in RISC-V CPU:**
 
