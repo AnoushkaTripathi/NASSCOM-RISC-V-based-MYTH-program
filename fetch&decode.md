@@ -125,6 +125,27 @@ The first component to implement is the **Next PC Logic**.
   # Labs Fetch Logic
 ![image](https://github.com/user-attachments/assets/47370ade-9759-4c96-af4f-ca8bf18d678c)
 ## Solution
+```
+      @0
+         $reset = *reset;
+         
+         
+         $pc[31:0] = (>>1$reset) ? 32'd0 : (>>1$pc + 32'd4);
+         //curr pc = (is prev reset value true) ? if yes, curr pc = 0 : if not, curr pc = prev pc + 4 (4 locations = 1 instr)
+         
+      @1
+         $imem_rd_en = ! $reset;  //active low reset - it considers the prev reset value
+         
+         //input the address - its not pc directly since pc is always a multiple of 4
+         //$imem_rd_addr[7:0] = $pc; //gives wrong ans - in instr mem - every index is considered 4 bytes (not 1 byte) so divide pc by 4 necessary
+         $imem_rd_addr[7:0] = $pc / 4 ; 
+         //after observing the waveform: it seems the addr in the mem = 8 only
+         //so as pc = 8*4 = 32 --> instr extracted is the first instr cuz : (32/4)mod8 = 0 (mod8 since only 8 instrs)
+         
+         //get the instruction from the instr mem
+         $instr[31:0] = $imem_rd_data[31:0];
+```
+![image](https://github.com/user-attachments/assets/f33a0e5f-cb0a-4d10-94f6-4b5ef2ed161e)
 
 ### **Summary of Key Steps:**
 - **Uncomment** the instruction memory instantiation and CPU visualization.
@@ -140,6 +161,7 @@ Here are the detailed notes on implementing the **Decode Logic** for the RISC-V 
 ### **1. Overview**
 - The next step in building the CPU is implementing the **decode logic**, which interprets the bits of the fetched instruction.
 - The goal of the decode stage is to determine the type of instruction and break it into its component fields based on the **RISC-V ISA** (Instruction Set Architecture).
+![image](https://github.com/user-attachments/assets/e1b09f0e-519e-4811-a35e-d0bf06dee6bd)
 
 ### **2. Instruction Types in RISC-V**
 - **RISC-V** defines several types of instructions, such as **R-type, I-type, S-type**, and more.
@@ -338,6 +360,7 @@ For each field, you need to create expressions to pull out the bits from the ins
   ```verilog
   funct7 = instruction[31:25];
   ```
+![image](https://github.com/user-attachments/assets/b33ac6c4-c76e-44fd-b3a5-baa2af61096e)
 
 ### **5. Field Extraction Table (for Reference)**
 | **Field**  | **Bit Range**  | **Example Verilog Expression**                  |
@@ -546,4 +569,109 @@ For each field, you need to create expressions to pull out the bits from the ins
 - After you’ve coded up all the necessary branches and arithmetic instructions, run the simulation.
   - Check that each instruction is correctly decoded by inspecting the waveforms.
   - Focus on ensuring that the **correct instruction is decoded** based on the bit patterns of `opcode`, `funct3`, and `funct7`.
+# Labs Decode logic
+![image](https://github.com/user-attachments/assets/c28db0d0-c355-4405-934f-6781ded41701)
+## Solution
+```
+ @0
+         $reset = *reset;
+         
+         
+         $pc[31:0] = (>>1$reset) ? 32'd0 : (>>1$pc + 32'd4);
+         //curr pc = (is prev reset value true) ? if yes, curr pc = 0 : if not, curr pc = prev pc + 4 (4 locations = 1 instr)
+         
+      @1
+         $imem_rd_en = ! $reset;  //active low reset - it considers the prev reset value
+         
+         //input the address - its not pc directly since pc is always a multiple of 4
+         //$imem_rd_addr[7:0] = $pc; //gives wrong ans - in instr mem - every index is considered 4 bytes (not 1 byte) so divide pc by 4 necessary
+         $imem_rd_addr[7:0] = $pc / 4 ; 
+         //after observing the waveform: it seems the addr in the mem = 8 only
+         //so as pc = 8*4 = 32 --> instr extracted is the first instr cuz : (32/4)mod8 = 0 (mod8 since only 8 instrs)
+         
+         //get the instruction from the instr mem
+         $instr[31:0] = $imem_rd_data[31:0]; 
+         
+         //opcode in any instr format is 7 bits long but we consider only 5 bits
+         //the part of instr that we need to decode the instr format = instr[6:2]
+         //instr[1:0] is always 11 for base instr set, hence ignored
+         
+         $is_i_instr = $instr[6:2] ==? 5'b0000x || //this takes care of 5'b00000 and 5'b00001
+                       $instr[6:2] ==? 5'b001x0 || //5'b00100 and 5'b00110
+                       $instr[6:2] ==? 5'b11001 ||
+                       $instr[6:2] ==? 5'b00100 ; 
+         
+         $is_r_instr = $instr[6:2] ==? 5'b01011 ||
+                       $instr[6:2] ==? 5'b011x0 || //5'b01100 and 5'b01110
+                       $instr[6:2] ==? 5'b10100 ;
+         
+         $is_s_instr = $instr[6:2] ==? 5'b0100x ; //5'b01000 and 5'b01001
+         
+         $is_b_instr = $instr[6:2] ==? 5'b11000 ;
+         
+         $is_j_instr = $instr[6:2] ==? 5'b11011 ;
+         
+         $is_u_instr = $instr[6:2] ==? 5'b0x101 ; //5'b00101 and 5'b01101
+```
+![image](https://github.com/user-attachments/assets/86476076-f057-4b36-bcce-d729ef40cb54)
+# Lab 2
+![image](https://github.com/user-attachments/assets/81ed70be-063c-4ddb-a660-d7dd300bd8b4)
+## Solution
+![image](https://github.com/user-attachments/assets/0e84f0ea-9199-4707-8ab3-c75fd05f408f)
+```
+ @0
+         $reset = *reset;
+         
+         
+         $pc[31:0] = (>>1$reset) ? 32'd0 : (>>1$pc + 32'd4);
+         //curr pc = (is prev reset value true) ? if yes, curr pc = 0 : if not, curr pc = prev pc + 4 (4 locations = 1 instr)
+         
+      @1
+         $imem_rd_en = ! $reset;  //active low reset - it considers the prev reset value
+         
+         //input the address - its not pc directly since pc is always a multiple of 4
+         //$imem_rd_addr[7:0] = $pc; //gives wrong ans - in instr mem - every index is considered 4 bytes (not 1 byte) so divide pc by 4 necessary
+         $imem_rd_addr[7:0] = $pc / 4 ; 
+         //after observing the waveform: it seems the addr in the mem = 8 only
+         //so as pc = 8*4 = 32 --> instr extracted is the first instr cuz : (32/4)mod8 = 0 (mod8 since only 8 instrs)
+         
+         //get the instruction from the instr mem
+         $instr[31:0] = $imem_rd_data[31:0]; 
+         
+         //opcode in any instr format is 7 bits long but we consider only 5 bits
+         //the part of instr that we need to decode the instr format = instr[6:2]
+         //instr[1:0] is always 11 for base instr set, hence ignored
+         
+         $is_i_instr = $instr[6:2] ==? 5'b0000x || //this takes care of 5'b00000 and 5'b00001
+                       $instr[6:2] ==? 5'b001x0 || //5'b00100 and 5'b00110
+                       $instr[6:2] ==? 5'b11001 ||
+                       $instr[6:2] ==? 5'b00100 ; 
+         
+         $is_r_instr = $instr[6:2] ==? 5'b01011 ||
+                       $instr[6:2] ==? 5'b011x0 || //5'b01100 and 5'b01110
+                       $instr[6:2] ==? 5'b10100 ;
+         
+         $is_s_instr = $instr[6:2] ==? 5'b0100x ; //5'b01000 and 5'b01001
+         
+         $is_b_instr = $instr[6:2] ==? 5'b11000 ;
+         
+         $is_j_instr = $instr[6:2] ==? 5'b11011 ;
+         
+         $is_u_instr = $instr[6:2] ==? 5'b0x101 ; //5'b00101 and 5'b01101
+         
+         //getting the immediate values and sign extending them
+         //Eg: {21{$instr[31]} , $instr[30:20]} --> 12 bit imm, msb = instr[31] -> sign extend = {21{msb}}
+         //instr[30:20] = give lower 11 (30-20+1) bits
+         //r instr doesn't have any imm values
+         $imm[31:0] = $is_i_instr ? { {21{$instr[31]}}, $instr[30:20] } : //12 bits for i type - immediate is one of the operands
+                      $is_s_instr ? { {21{$instr[31]}}, $instr[30:25], $instr[11:7] } : //12 bits for s type - imm gives offset for calc effective address to store value
+                      $is_b_instr ? { {20{$instr[31]}}, $instr[7], $instr[31:25], $instr[11:8], 1'b0 } : //13 bits for b type - imm gives pc relative offset to branch required label/instr
+                      $is_u_instr ? { $instr[31:12] , 12'b0 } : //20 bits for u type - imm gives upper 20 bits of a 32 bit value 
+                      $is_j_instr ? { {12{$instr[31]}}, $instr[19:12], $instr[20], $instr[30:21], 1'b0 } : //21 bits for j type - imm gives the pc relative addr to jump to 
+                      32'b0 ; //if none of the instrs mentioned (if rtype), then imm is 0 - if this condition isn't there - ternary op is not complete - throws error
+```
+![image](https://github.com/user-attachments/assets/3b34aa71-a98a-4b81-a1f1-e9ac927674b9)
 
+![image](https://github.com/user-attachments/assets/42595953-f6eb-4c3f-bd1a-463ebe3da438)
+# Lab
+![image](https://github.com/user-attachments/assets/26427d83-c9d9-48d6-840f-1b844d4adc17)
