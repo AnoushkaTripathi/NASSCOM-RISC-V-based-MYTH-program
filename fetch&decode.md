@@ -675,3 +675,67 @@ For each field, you need to create expressions to pull out the bits from the ins
 ![image](https://github.com/user-attachments/assets/42595953-f6eb-4c3f-bd1a-463ebe3da438)
 # Lab
 ![image](https://github.com/user-attachments/assets/26427d83-c9d9-48d6-840f-1b844d4adc17)
+## Solution
+![image](https://github.com/user-attachments/assets/2177da3b-bdc1-4121-b508-c52a0cfef471)
+```
+ @0
+         $reset = *reset;
+         
+         
+         $pc[31:0] = (>>1$reset) ? 32'd0 : (>>1$pc + 32'd4);
+         //curr pc = (is prev reset value true) ? if yes, curr pc = 0 : if not, curr pc = prev pc + 4 (4 locations = 1 instr)
+         
+      @1
+         $imem_rd_en = ! $reset;  //active low reset - it considers the prev reset value
+         
+         //input the address - its not pc directly since pc is always a multiple of 4
+         //$imem_rd_addr[7:0] = $pc; //gives wrong ans - in instr mem - every index is considered 4 bytes (not 1 byte) so divide pc by 4 necessary
+         $imem_rd_addr[7:0] = $pc / 4 ; 
+         //after observing the waveform: it seems the addr in the mem = 8 only
+         //so as pc = 8*4 = 32 --> instr extracted is the first instr cuz : (32/4)mod8 = 0 (mod8 since only 8 instrs)
+         
+         //get the instruction from the instr mem
+         $instr[31:0] = $imem_rd_data[31:0]; 
+         
+         //opcode in any instr format is 7 bits long but we consider only 5 bits
+         //the part of instr that we need to decode the instr format = instr[6:2]
+         //instr[1:0] is always 11 for base instr set, hence ignored
+         
+         $is_i_instr = $instr[6:2] ==? 5'b0000x || //this takes care of 5'b00000 and 5'b00001
+                       $instr[6:2] ==? 5'b001x0 || //5'b00100 and 5'b00110
+                       $instr[6:2] ==? 5'b11001 ||
+                       $instr[6:2] ==? 5'b00100 ; 
+         
+         $is_r_instr = $instr[6:2] ==? 5'b01011 ||
+                       $instr[6:2] ==? 5'b011x0 || //5'b01100 and 5'b01110
+                       $instr[6:2] ==? 5'b10100 ;
+         
+         $is_s_instr = $instr[6:2] ==? 5'b0100x ; //5'b01000 and 5'b01001
+         
+         $is_b_instr = $instr[6:2] ==? 5'b11000 ;
+         
+         $is_j_instr = $instr[6:2] ==? 5'b11011 ;
+         
+         $is_u_instr = $instr[6:2] ==? 5'b0x101 ; //5'b00101 and 5'b01101
+         
+         //getting the immediate values and sign extending them
+         //Eg: {21{$instr[31]} , $instr[30:20]} --> 12 bit imm, msb = instr[31] -> sign extend = {21{msb}}
+         //instr[30:20] = give lower 11 (30-20+1) bits
+         //r instr doesn't have any imm values
+         $imm[31:0] = $is_i_instr ? { {21{$instr[31]}}, $instr[30:20] } : //12 bits for i type - immediate is one of the operands
+                      $is_s_instr ? { {21{$instr[31]}}, $instr[30:25], $instr[11:7] } : //12 bits for s type - imm gives offset for calc effective address to store value
+                      $is_b_instr ? { {20{$instr[31]}}, $instr[7], $instr[31:25], $instr[11:8], 1'b0 } : //13 bits for b type - imm gives pc relative offset to branch required label/instr
+                      $is_u_instr ? { $instr[31:12] , 12'b0 } : //20 bits for u type - imm gives upper 20 bits of a 32 bit value 
+                      $is_j_instr ? { {12{$instr[31]}}, $instr[19:12], $instr[20], $instr[30:21], 1'b0 } : //21 bits for j type - imm gives the pc relative addr to jump to 
+                      32'b0 ; //if none of the instrs mentioned (if rtype), then imm is 0 - if this condition isn't there - ternary op is not complete - throws error
+         
+         //extracting other fields of instr
+         //risc v is a regular ISA, which means most fields are consistent in their bit positions for all instr types except for immediate field
+         //hence other fields of instr don't need to type based conditions
+         $funct7[6:0] = $instr[31:25]; 
+         $funct3[2:0] = $instr[14:12];
+         $rs1[4:0] = $instr[19:15]; //source reg 1 - only 32 reg in total, so 5 bits to represent them
+         $rs2[4:0] = $instr[24:20]; //source reg 2
+         $rd[4:0] = $instr[11:7]; //destination reg
+         $opcode[6:0] = $instr[6:0]; //opcode required to instruct the alu
+```
