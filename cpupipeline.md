@@ -217,3 +217,28 @@ While pipelining increases performance, it introduces some **challenges**, parti
    - Even though the steps involve simple operations, **TL-Verilog** can significantly alter the RTL.
    - Minimal changes can lead to widespread updates in the RTL logic, making the development process efficient.
 
+## Test Bench for Simulation Verification
+![image](https://github.com/user-attachments/assets/4cb0c1c1-39d6-4a34-9d90-e1e539f90b61)
+
+### Purpose
+The test bench is used to verify whether the test program has been executed correctly in simulation. It monitors specific signals and ensures the expected results are obtained before stopping the simulation.
+
+### Signals Used
+- **`passed` and `failed`**: These signals communicate with the MakerChip platform to indicate whether the test has passed or failed. The simulation halts accordingly and reports the result.
+
+### Monitoring Register for Validation
+- The summation result is stored in **register x10**.
+- The test bench checks the value inside this register to verify if the correct sum (sum of numbers from 1 to 9) has been computed.
+
+### Expression for Passing Condition
+- The expression **`x_reg[10].value`** is used to read the value from register x10.
+- A delay of **5 cycles** is introduced before stopping the simulation to allow better observation of waveforms.
+- The test verifies that register x10 contains the correct summation result.
+
+### Steps to Implement
+1. Define the condition to check if the value in `x10` matches the expected sum.
+2. Allow the simulation to run for a few extra cycles before stopping.
+3. Check the simulation log to confirm the presence of a **pass** message at the bottom.
+4. If the message appears, the test is successful.
+
+
