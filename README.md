@@ -27,7 +27,6 @@ Welcome to this hands-on journey into digital logic design! We're diving into TL
 |     |                                          | [Integer number representation](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/integerrepresentation.md)       |
 | 2   | ABI & Basic Verification Flow | [ABI Basics](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/ABIlab.md) |
 |     |                                          | [ABI Labs](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/verification.md)      |
-|     |                                          | [Basic Verification flow using iverilog](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/.md)       |
 | 3   | Digital logic with TL-Verilog in Makerchip IDE | [Logic Gates](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Logicgates.md)  |
 |     |                                          | [Makerchip Platform](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Makerchip_platform.md)    |
 |     |                                          | [Combinational Logic](https://github.com/AnoushkaTripathi/NASSCOM-RISC-V-based-MYTH-program/blob/main/Combinational_ckts.md) |
